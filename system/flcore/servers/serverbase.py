@@ -54,7 +54,7 @@ class Server(object):
         self.train_slow_rate = args.train_slow_rate
         self.send_slow_rate = args.send_slow_rate
 
-        self.dlg_eval = args.dlg_eval
+        self.dlg_eval = args.dlg_eval  # this is for what ??
         self.dlg_gap = args.dlg_gap
         self.batch_num_per_client = args.batch_num_per_client
 
@@ -121,16 +121,18 @@ class Server(object):
         self.uploaded_weights = []
         self.uploaded_models = []
         tot_samples = 0
+
         for client in active_clients:
             try:
                 client_time_cost = client.train_time_cost['total_cost'] / client.train_time_cost['num_rounds'] + \
                         client.send_time_cost['total_cost'] / client.send_time_cost['num_rounds']
             except ZeroDivisionError:
                 client_time_cost = 0
+
             if client_time_cost <= self.time_threthold:
                 tot_samples += client.train_samples
                 self.uploaded_ids.append(client.id)
-                self.uploaded_weights.append(client.train_samples)
+                self.uploaded_weights.append(client.train_samples)  # train_samples = len(train_data)
                 self.uploaded_models.append(client.model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples

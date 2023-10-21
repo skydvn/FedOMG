@@ -8,11 +8,11 @@ import yaml
 
 class FedRoto(Server):
     def __init__(self, args, times):
-        super().__init__(args, times)
+        super().__init__(args, times)  # note this
 
         # select slow clients
         self.set_slow_clients()
-        self.set_clients(clientAVG)
+        self.set_clients(clientRoto) # set client RotoGrad
 
         """
         Define args: 
@@ -62,6 +62,13 @@ class FedRoto(Server):
             """
 
             """
+            function self.receive_models :
+            self.
+            
+            """
+
+
+            """
                 - Loops key in Key_dict:
                     G~_k = self.updated_model[key] * G_k
                         * (Layer-wise operation or Norm over all parameters)
@@ -76,9 +83,6 @@ class FedRoto(Server):
             """
                 Do from 9 -> 17
             """
-
-
-
 
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)

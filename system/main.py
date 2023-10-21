@@ -437,6 +437,9 @@ if __name__ == "__main__":
     # GPFL
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
+    # RotoGrad
+    # parser.add_argument('-starting point', type=int, default=4,
+    #                     help="Starting point in the layer for rotate matrix")
 
     args = parser.parse_args()
 
