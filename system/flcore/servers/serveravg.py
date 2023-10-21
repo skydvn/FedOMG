@@ -2,6 +2,8 @@ import time
 from flcore.clients.clientavg import clientAVG
 from flcore.servers.serverbase import Server
 from threading import Thread
+import numpy
+import yaml
 
 
 class FedAvg(Server):
