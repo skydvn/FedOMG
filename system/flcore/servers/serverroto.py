@@ -13,7 +13,7 @@ class FedRoto(Server):
         # select slow clients
         self.set_slow_clients()
         self.set_clients(clientRoto)  # set client RotoGrad
-
+        self.update_grad = []
         """
         Define args: 
             - roto_layer_start: the starting point index of the roto 
@@ -32,6 +32,18 @@ class FedRoto(Server):
 
         # self.load_model()
         self.Budget = []
+
+    """
+    Calculate Gradient Trajectory
+    each client has a local model and the list of all local models: self.uploaded_models = []
+    the ouptput is: the update of local model compare to the global model sending to local in the previous round
+    
+    """
+    def get_gradient(self):
+        assert (len(self.upload_weights) > 0)
+        self.update_grad = []
+
+        pass
 
 
     def train(self):
@@ -66,29 +78,14 @@ class FedRoto(Server):
             for client in self.selected_clients:
                 client.train()
 
-            """
-            
-            """
-
-            # threads = [Thread(target=client.train)
-            #            for client in self.selected_clients]
-            # [t.start() for t in threads]
-            # [t.join() for t in threads]
-
             self.receive_models()
-
+            # only thing update here is the weight for parameter
             """
             Calculate Gradient Trajectory
                 - Loops over all clients:
                     - grad_t[u] = w^{t+1}_u - w^{t}_g
             """
-
-            """
-            function self.receive_models :
-            self.
             
-            """
-
 
             """
                 - Loops key in Key_dict:
@@ -109,7 +106,7 @@ class FedRoto(Server):
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)
 
-            self.aggregate_parameters()
+            # self.aggregate_parameters()
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
