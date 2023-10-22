@@ -2,7 +2,7 @@ import time
 from flcore.clients.clientroto import clientRoto
 from flcore.servers.serverbase import Server
 from threading import Thread
-import numpy
+import numpy as np
 import yaml
 
 
@@ -12,7 +12,7 @@ class FedRoto(Server):
 
         # select slow clients
         self.set_slow_clients()
-        self.set_clients(clientRoto) # set client RotoGrad
+        self.set_clients(clientRoto)  # set client RotoGrad
 
         """
         Define args: 
@@ -39,6 +39,24 @@ class FedRoto(Server):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
+            """
+            def send_models(self):
+                assert (len(self.clients) > 0)
+    
+                for client in self.clients:
+                    start_time = time.time()
+                    
+                    client.set_parameters(self.global_model)
+                    
+                    client.send_time_cost['num_rounds'] += 1
+                    client.send_time_cost['total_cost'] += 2 * (time.time() - start_time)
+                    client.set_parameters(self.global_model)
+    
+            def set_parameters(self, model):
+                for new_param, old_param in zip(model.parameters(), self.model.parameters()):
+                    old_param.data = new_param.data.clone()
+                    
+            """
 
             if i%self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
@@ -47,6 +65,10 @@ class FedRoto(Server):
 
             for client in self.selected_clients:
                 client.train()
+
+            """
+            
+            """
 
             # threads = [Thread(target=client.train)
             #            for client in self.selected_clients]
@@ -86,6 +108,7 @@ class FedRoto(Server):
 
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)
+
             self.aggregate_parameters()
 
             self.Budget.append(time.time() - s_t)
@@ -106,7 +129,7 @@ class FedRoto(Server):
 
         if self.num_new_clients > 0:
             self.eval_new_clients = True
-            self.set_new_clients(clientAVG)
+            self.set_new_clients(clientRoto)
             print(f"\n-------------Fine tuning round-------------")
             print("\nEvaluate new clients")
             self.evaluate()

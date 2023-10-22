@@ -175,141 +175,141 @@ def run(args):
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
-        elif args.algorithm == "Local":
-            server = Local(args, i)
-
-        elif args.algorithm == "FedMTL":
-            server = FedMTL(args, i)
-
-        elif args.algorithm == "PerAvg":
-            server = PerAvg(args, i)
-
-        elif args.algorithm == "pFedMe":
-            server = pFedMe(args, i)
-
-        elif args.algorithm == "FedProx":
-            server = FedProx(args, i)
-
-        elif args.algorithm == "FedFomo":
-            server = FedFomo(args, i)
-
-        elif args.algorithm == "FedAMP":
-            server = FedAMP(args, i)
-
-        elif args.algorithm == "APFL":
-            server = APFL(args, i)
-
-        elif args.algorithm == "FedPer":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedPer(args, i)
-
-        elif args.algorithm == "Ditto":
-            server = Ditto(args, i)
-
-        elif args.algorithm == "FedRep":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedRep(args, i)
-
-        elif args.algorithm == "FedPHP":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedPHP(args, i)
-
-        elif args.algorithm == "FedBN":
-            server = FedBN(args, i)
-
-        elif args.algorithm == "FedROD":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedROD(args, i)
-
-        elif args.algorithm == "FedProto":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedProto(args, i)
-
-        elif args.algorithm == "FedDyn":
-            server = FedDyn(args, i)
-
-        elif args.algorithm == "MOON":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = MOON(args, i)
-
-        elif args.algorithm == "FedBABU":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedBABU(args, i)
-
-        elif args.algorithm == "APPLE":
-            server = APPLE(args, i)
-
-        elif args.algorithm == "FedGen":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedGen(args, i)
-
-        elif args.algorithm == "SCAFFOLD":
-            server = SCAFFOLD(args, i)
-
-        elif args.algorithm == "FedDistill":
-            server = FedDistill(args, i)
-
-        elif args.algorithm == "FedALA":
-            server = FedALA(args, i)
-
-        elif args.algorithm == "FedPAC":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedPAC(args, i)
-
-        elif args.algorithm == "LG-FedAvg":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = LG_FedAvg(args, i)
-
-        elif args.algorithm == "FedGC":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedGC(args, i)
-
-        elif args.algorithm == "FML":
-            server = FML(args, i)
-
-        elif args.algorithm == "FedKD":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedKD(args, i)
-
-        elif args.algorithm == "FedPCL":
-            args.model.fc = nn.Identity()
-            server = FedPCL(args, i)
-
-        elif args.algorithm == "FedCP":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedCP(args, i)
-
-        elif args.algorithm == "GPFL":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = GPFL(args, i)
+        # elif args.algorithm == "Local":
+        #     server = Local(args, i)
+        #
+        # elif args.algorithm == "FedMTL":
+        #     server = FedMTL(args, i)
+        #
+        # elif args.algorithm == "PerAvg":
+        #     server = PerAvg(args, i)
+        #
+        # elif args.algorithm == "pFedMe":
+        #     server = pFedMe(args, i)
+        #
+        # elif args.algorithm == "FedProx":
+        #     server = FedProx(args, i)
+        #
+        # elif args.algorithm == "FedFomo":
+        #     server = FedFomo(args, i)
+        #
+        # elif args.algorithm == "FedAMP":
+        #     server = FedAMP(args, i)
+        #
+        # elif args.algorithm == "APFL":
+        #     server = APFL(args, i)
+        #
+        # elif args.algorithm == "FedPer":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedPer(args, i)
+        #
+        # elif args.algorithm == "Ditto":
+        #     server = Ditto(args, i)
+        #
+        # elif args.algorithm == "FedRep":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedRep(args, i)
+        #
+        # elif args.algorithm == "FedPHP":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedPHP(args, i)
+        #
+        # elif args.algorithm == "FedBN":
+        #     server = FedBN(args, i)
+        #
+        # elif args.algorithm == "FedROD":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedROD(args, i)
+        #
+        # elif args.algorithm == "FedProto":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedProto(args, i)
+        #
+        # elif args.algorithm == "FedDyn":
+        #     server = FedDyn(args, i)
+        #
+        # elif args.algorithm == "MOON":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = MOON(args, i)
+        #
+        # elif args.algorithm == "FedBABU":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedBABU(args, i)
+        #
+        # elif args.algorithm == "APPLE":
+        #     server = APPLE(args, i)
+        #
+        # elif args.algorithm == "FedGen":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedGen(args, i)
+        #
+        # elif args.algorithm == "SCAFFOLD":
+        #     server = SCAFFOLD(args, i)
+        #
+        # elif args.algorithm == "FedDistill":
+        #     server = FedDistill(args, i)
+        #
+        # elif args.algorithm == "FedALA":
+        #     server = FedALA(args, i)
+        #
+        # elif args.algorithm == "FedPAC":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedPAC(args, i)
+        #
+        # elif args.algorithm == "LG-FedAvg":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = LG_FedAvg(args, i)
+        #
+        # elif args.algorithm == "FedGC":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedGC(args, i)
+        #
+        # elif args.algorithm == "FML":
+        #     server = FML(args, i)
+        #
+        # elif args.algorithm == "FedKD":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedKD(args, i)
+        #
+        # elif args.algorithm == "FedPCL":
+        #     args.model.fc = nn.Identity()
+        #     server = FedPCL(args, i)
+        #
+        # elif args.algorithm == "FedCP":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedCP(args, i)
+        #
+        # elif args.algorithm == "GPFL":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = GPFL(args, i)
             
         else:
             raise NotImplementedError
@@ -347,7 +347,7 @@ if __name__ == "__main__":
                         help="Local learning rate")
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
     parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
-    parser.add_argument('-gr', "--global_rounds", type=int, default=2000)
+    parser.add_argument('-gr', "--global_rounds", type=int, default=10)
     parser.add_argument('-ls', "--local_epochs", type=int, default=1, 
                         help="Multiple update steps in one local epoch.")
     parser.add_argument('-algo', "--algorithm", type=str, default="FedAvg")

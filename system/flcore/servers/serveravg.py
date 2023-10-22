@@ -3,7 +3,7 @@ from flcore.clients.clientavg import clientAVG
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy
-import yaml
+# import yaml
 
 
 class FedAvg(Server):
@@ -41,6 +41,8 @@ class FedAvg(Server):
             # [t.join() for t in threads]
 
             self.receive_models()
+
+
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)
             self.aggregate_parameters()

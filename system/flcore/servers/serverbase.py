@@ -117,6 +117,8 @@ class Server(object):
         active_clients = random.sample(
             self.selected_clients, int((1-self.client_drop_rate) * self.current_num_join_clients))
 
+        # print(len(active_clients))
+
         self.uploaded_ids = []
         self.uploaded_weights = []
         self.uploaded_models = []
@@ -131,11 +133,16 @@ class Server(object):
 
             if client_time_cost <= self.time_threthold:
                 tot_samples += client.train_samples
+                # print(tot_samples)
+                # print("client train_samples", client.train_samples)
                 self.uploaded_ids.append(client.id)
                 self.uploaded_weights.append(client.train_samples)  # train_samples = len(train_data)
                 self.uploaded_models.append(client.model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
+            # print("w", w)
+        # print(self.uploaded_weights)
+
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
