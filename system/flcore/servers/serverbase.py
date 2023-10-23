@@ -111,6 +111,9 @@ class Server(object):
             client.send_time_cost['num_rounds'] += 1
             client.send_time_cost['total_cost'] += 2 * (time.time() - start_time)
 
+    # After update the self.global model then the for loop begins again and with this function
+    # and the client get the global model parameter again
+
     def receive_models(self):
         assert (len(self.selected_clients) > 0)
 
@@ -140,8 +143,15 @@ class Server(object):
                 self.uploaded_models.append(client.model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
-            # print("w", w)
-        # print(self.uploaded_weights)
+
+        """     
+        for i, model in enumerate(self.uploaded_models, 1):
+            print(f"client", i)
+            print(f"model", model)
+            for name, param in model.named_parameters(): 
+                print(f"name", name)
+                print(f"param", param)
+        """
 
 
     def aggregate_parameters(self):
@@ -157,6 +167,8 @@ class Server(object):
     def add_parameters(self, w, client_model):
         for server_param, client_param in zip(self.global_model.parameters(), client_model.parameters()):
             server_param.data += client_param.data.clone() * w
+    # this function will update the global model
+    # need to see where the global model go
 
     def save_global_model(self):
         model_path = os.path.join("models", self.dataset)

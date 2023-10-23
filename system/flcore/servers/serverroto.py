@@ -1,4 +1,5 @@
 import time
+import copy
 from flcore.clients.clientroto import clientRoto
 from flcore.servers.serverbase import Server
 from threading import Thread
@@ -13,7 +14,8 @@ class FedRoto(Server):
         # select slow clients
         self.set_slow_clients()
         self.set_clients(clientRoto)  # set client RotoGrad
-        self.update_grad = []
+        self.update_grad = []  # store model with parameters update
+
         """
         Define args: 
             - roto_layer_start: the starting point index of the roto 
@@ -33,17 +35,6 @@ class FedRoto(Server):
         # self.load_model()
         self.Budget = []
 
-    """
-    Calculate Gradient Trajectory
-    each client has a local model and the list of all local models: self.uploaded_models = []
-    the ouptput is: the update of local model compare to the global model sending to local in the previous round
-    
-    """
-    def get_gradient(self):
-        assert (len(self.upload_weights) > 0)
-        self.update_grad = []
-
-        pass
 
 
     def train(self):
@@ -51,24 +42,6 @@ class FedRoto(Server):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
-            """
-            def send_models(self):
-                assert (len(self.clients) > 0)
-    
-                for client in self.clients:
-                    start_time = time.time()
-                    
-                    client.set_parameters(self.global_model)
-                    
-                    client.send_time_cost['num_rounds'] += 1
-                    client.send_time_cost['total_cost'] += 2 * (time.time() - start_time)
-                    client.set_parameters(self.global_model)
-    
-            def set_parameters(self, model):
-                for new_param, old_param in zip(model.parameters(), self.model.parameters()):
-                    old_param.data = new_param.data.clone()
-                    
-            """
 
             if i%self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
@@ -85,7 +58,27 @@ class FedRoto(Server):
                 - Loops over all clients:
                     - grad_t[u] = w^{t+1}_u - w^{t}_g
             """
-            
+            """
+            The work is to get the gradient update of the local model from the global model
+            So local model is stored in the list self.uploaded_models = [] which elements is client.model
+            the connection between the global and the local: 
+            """
+            self.update_grad = copy.deepcopy(self.uploaded_models)
+            # This for copy the list to store all the gradient update value
+
+            for model in self.update_grad:
+                for param in model.parameters():
+                    param.data.zero_()
+            # Set all in place value to zero to store new gradient value
+
+            for grad_model, local_model in zip(self.update_grad, self.uploaded_models):
+                for grad_param, local_param in zip(grad_model.parmameters(), local_model.parameters()):
+                    grad_param.data = local_param.data - self.global_model.parameters().data
+
+            # self.upload_grad store all client update parameters
+
+
+
 
             """
                 - Loops key in Key_dict:
@@ -106,7 +99,7 @@ class FedRoto(Server):
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)
 
-            # self.aggregate_parameters()
+            self.aggregate_parameters()
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
@@ -130,3 +123,13 @@ class FedRoto(Server):
             print(f"\n-------------Fine tuning round-------------")
             print("\nEvaluate new clients")
             self.evaluate()
+
+    """
+    Calculate Gradient Trajectory
+    This for outside function later 
+    """
+
+    def get_gradient(self):
+        assert (len(self.upload_weights) > 0)
+        self.update_grad = []
+        pass
