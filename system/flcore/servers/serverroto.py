@@ -71,20 +71,37 @@ class FedRoto(Server):
                     param.data.zero_()
             # Set all in place value to zero to store new gradient value
 
-            for grad_model, local_model in zip(self.update_grad, self.uploaded_models):
-                for grad_param, local_param in zip(grad_model.parmameters(), local_model.parameters()):
-                    grad_param.data = local_param.data - self.global_model.parameters().data
+            for grad_model, local_model in zip(self.grads, self.uploaded_models):
+                for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
+                                                                 self.global_model.parameters()):
+                    grad_param.data = local_param.data - global_param.data
 
             # self.upload_grad store all client update parameters
-
-
-
 
             """
                 - Loops key in Key_dict:
                     G~_k = self.updated_model[key] * G_k
                         * (Layer-wise operation or Norm over all parameters)
             """
+            """
+            locate where is R and how is it defined 
+            RotoGrad(backbone, heads, rotation_size, normalize)
+            backbone, heads: FeedForward module
+            rotation_size = backbone_output_size
+            model.train()
+            preds = model(x)
+            model.backward(losses)
+            """
+            """
+            Foward step:
+            z = backbone(x)
+            rotate(R_i, z)
+            preds.append()
+            """
+            
+
+
+
 
             """
                 U_k = G_k / ||G~_k||
