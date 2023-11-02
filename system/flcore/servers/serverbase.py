@@ -43,6 +43,7 @@ class Server(object):
         self.uploaded_weights = []
         self.uploaded_ids = []
         self.uploaded_models = []
+        self.grads = []
 
         self.rs_test_acc = []
         self.rs_test_auc = []
@@ -153,28 +154,26 @@ class Server(object):
                 print(f"param", param)
         """
 
-    # def receive_grads(self):
-    #     self.grads = []
-    #     self.grads = copy.deepcopy(self.uploaded_models)
-    #     # This for copy the list to store all the gradient update value
-    #
-    #     for model in self.grads:
-    #         for param in model.parameters():
-    #             param.data.zero_()
-    #     # Set all in place value to zero to store new gradient value
-    #
-    #     for grad_model, local_model in zip(self.grads, self.uploaded_models):
-    #         for grad_param, local_param, global_param in
-    #         zip(grad_model.parameters(), local_model.parameters(), self.global_model.parameters()):
-    #             grad_param.data = local_param.data - global_param.data
-    #
-    #     for i, model in enumerate(self.grads, 1):
-    #         print(f"client", i)
-    #         print(f"model", model)
-    #         for name, param in model.named_parameters():
-    #             print(f"name", name)
-    #             print(f"param", param)
+    def receive_grads(self):
+        self.grads = copy.deepcopy(self.uploaded_models)
+        # This for copy the list to store all the gradient update value
 
+        for model in self.grads:
+            for param in model.parameters():
+                param.data.zero_()
+        # Set all in place value to zero to store new gradient value
+
+        for grad_model, local_model in zip(self.grads, self.uploaded_models):
+            for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
+                                                             self.global_model.parameters()):
+                grad_param.data = local_param.data - global_param.data
+
+        for i, model in enumerate(self.grads, 1):
+            print(f"client", i)
+            print(f"model", model)
+            for param in model.parameters():
+                # print(f"name", name)
+                print(param)
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
@@ -381,7 +380,7 @@ class Server(object):
         for client in self.new_clients:
             client.set_parameters(self.global_model)
             opt = torch.optim.SGD(client.model.parameters(), lr=self.learning_rate)
-            CEloss = torch.nn.CrossEntropyLoss()
+            celoss = torch.nn.CrossEntropyLoss()
             trainloader = client.load_train_data()
             client.model.train()
             for e in range(self.fine_tuning_epoch):
@@ -392,7 +391,7 @@ class Server(object):
                         x = x.to(client.device)
                     y = y.to(client.device)
                     output = client.model(x)
-                    loss = CEloss(output, y)
+                    loss = celoss(output, y)
                     opt.zero_grad()
                     loss.backward()
                     opt.step()
