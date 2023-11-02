@@ -20,7 +20,6 @@ class FedAvg(Server):
         # self.load_model()
         self.Budget = []
 
-
     def train(self):
         for i in range(self.global_rounds+1):
             s_t = time.time()

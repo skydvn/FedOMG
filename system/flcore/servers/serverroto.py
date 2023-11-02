@@ -35,8 +35,6 @@ class FedRoto(Server):
         # self.load_model()
         self.Budget = []
 
-
-
     def train(self):
         for i in range(self.global_rounds+1):
             s_t = time.time()
@@ -63,7 +61,7 @@ class FedRoto(Server):
             So local model is stored in the list self.uploaded_models = [] which elements is client.model
             the connection between the global and the local: 
             """
-            self.update_grad = copy.deepcopy(self.uploaded_models)
+            self.update_grad = copy.deepcopy(self.uploaded_models)  # Deep copy self.uploaded_model from serverbase
             # This for copy the list to store all the gradient update value
 
             for model in self.update_grad:
@@ -83,6 +81,7 @@ class FedRoto(Server):
                     G~_k = self.updated_model[key] * G_k
                         * (Layer-wise operation or Norm over all parameters)
             """
+
             """
             locate where is R and how is it defined 
             RotoGrad(backbone, heads, rotation_size, normalize)
@@ -92,16 +91,13 @@ class FedRoto(Server):
             preds = model(x)
             model.backward(losses)
             """
+
             """
             Foward step:
             z = backbone(x)
             rotate(R_i, z)
             preds.append()
             """
-            
-
-
-
 
             """
                 U_k = G_k / ||G~_k||
@@ -146,7 +142,7 @@ class FedRoto(Server):
     This for outside function later 
     """
 
-    def get_gradient(self):
-        assert (len(self.upload_weights) > 0)
-        self.update_grad = []
-        pass
+    # def get_gradient(self):
+    #     assert (len(self.upload_weights) > 0)
+    #     self.update_grad = []
+    #     pass

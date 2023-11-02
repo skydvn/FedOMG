@@ -16,10 +16,8 @@ class FedCAGrad(Server):
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
-
-        # self.load_model()
         self.Budget = []
-
+        self.grads =
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -35,13 +33,10 @@ class FedCAGrad(Server):
             for client in self.selected_clients:
                 client.train()
 
-            # threads = [Thread(target=client.train)
-            #            for client in self.selected_clients]
-            # [t.start() for t in threads]
-            # [t.join() for t in threads]
-
             self.receive_models()
-            self.receive_grads()
+            '''
+            This part for calculate each gradient update value and store in 
+            '''
 
             if self.dlg_eval and i%self.dlg_gap == 0:
                 self.call_dlg(i)
