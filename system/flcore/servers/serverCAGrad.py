@@ -17,7 +17,6 @@ class FedCAGrad(Server):
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
         self.Budget = []
-        self.grads =
 
     def train(self):
         for i in range(self.global_rounds+1):

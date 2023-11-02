@@ -1,13 +1,9 @@
 import copy
 import torch
-import torch.nn as nn
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
 from utils.privacy import *
-
-
-# import
 
 class clientCAGrad(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
