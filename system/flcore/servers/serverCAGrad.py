@@ -18,6 +18,7 @@ class FedCAGrad(Server):
         print("Finished creating server and clients.")
         self.Budget = []
         self.update_grads = []
+        self.cagrad_c = 0.5
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -36,6 +37,8 @@ class FedCAGrad(Server):
             self.receive_models()
             # The code to receive model.grads in serverbase
             self.receive_grads()
+
+
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
             self.aggregate_parameters()
@@ -62,6 +65,7 @@ class FedCAGrad(Server):
             print(f"\n-------------Fine tuning round-------------")
             print("\nEvaluate new clients")
             self.evaluate()
+
     def cagrad(self, grad_vec, num_tasks):
         """
         grad_vec: [num_tasks, dim]
@@ -76,7 +80,8 @@ class FedCAGrad(Server):
 
         # gg is scalar
 
-        w = torch.zeros(num_tasks, 1, requires_grad=True)
+        w = torch.zeros(num_tasks, 1, requires_grad=True)                                          # w
+
         if num_tasks == 50:
             w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)                               #
         else:

@@ -155,6 +155,7 @@ class Server(object):
         """
 
     def receive_grads(self):
+        # grads = 0
         self.grads = copy.deepcopy(self.uploaded_models)
         # This for copy the list to store all the gradient update value
 
@@ -167,13 +168,23 @@ class Server(object):
             for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
                                                              self.global_model.parameters()):
                 grad_param.data = local_param.data - global_param.data
+                # grads = torch.sub(local_param.data, global_param.data)
 
-        for i, model in enumerate(self.grads, 1):
-            print(f"client", i)
-            print(f"model", model)
-            for param in model.parameters():
-                # print(f"name", name)
-                print(param)
+        # for i, model in enumerate(self.grads, 1):
+        #     print(f"client", i)
+        #     print(f"model", model)
+        #     for param in model.parameters():
+        #         # print(f"name", name)
+        #         print(param.size())
+        #         # print(param)
+        #         if torch.is_tensor(param):
+        #             print("The variable is a PyTorch tensor.")
+
+        # for model in self.grads:
+        #     for param in model.parameters():
+        #         print(param)
+
+        # print(grads)
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
