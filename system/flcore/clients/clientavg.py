@@ -43,7 +43,7 @@ class clientAVG(Client):
                 loss.backward()
                 self.optimizer.step()
 
-        print(self.model.base.conv1[0].weight.grad.size())
+        # print(self.model.base.conv1[0].weight.grad.size())
         # self.model.cpu()
 
         if self.learning_rate_decay:

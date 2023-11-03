@@ -155,7 +155,7 @@ class Server(object):
         """
 
     def receive_grads(self):
-        # grads = 0
+
         self.grads = copy.deepcopy(self.uploaded_models)
         # This for copy the list to store all the gradient update value
 
@@ -168,7 +168,19 @@ class Server(object):
             for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
                                                              self.global_model.parameters()):
                 grad_param.data = local_param.data - global_param.data
-                # grads = torch.sub(local_param.data, global_param.data)
+
+        # for grad_model in self.grads:
+        #     grad_update.append(flatten_params(grad_model.parameters()))
+        #
+        # grad_update = torch.vstack(grad_update)
+        # print(grad_update.size())
+
+        # for model in self.grads:
+        #     print(model)
+        #     for name, param in model.named_parameters():
+        #         print(f"name: {name}")
+        #         # print(f"param: {param}")
+        #         print(f"size: {param.size()}")
 
         # for i, model in enumerate(self.grads, 1):
         #     print(f"client", i)
@@ -198,6 +210,7 @@ class Server(object):
 
     def add_parameters(self, w, client_model):
         for server_param, client_param in zip(self.global_model.parameters(), client_model.parameters()):
+            # print(client_param.data)
             server_param.data += client_param.data.clone() * w
     # this function will update the global model
     # need to see where the global model go

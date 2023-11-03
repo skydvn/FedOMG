@@ -5,6 +5,7 @@ from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
 import yaml
+import copy
 
 class FedCAGrad(Server):
     def __init__(self, args, times):
@@ -26,7 +27,7 @@ class FedCAGrad(Server):
             self.selected_clients = self.select_clients()
             self.send_models()
 
-            if i%self.eval_gap == 0:
+            if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
@@ -35,13 +36,12 @@ class FedCAGrad(Server):
                 client.train()
 
             self.receive_models()
-            # The code to receive model.grads in serverbase
             self.receive_grads()
-
+            self.update_grads = self.gradient_update(self.grads)
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
-            self.aggregate_parameters()
+            # self.aggregate_parameters()
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
@@ -72,11 +72,11 @@ class FedCAGrad(Server):
         """
         grads = grad_vec
 
-        GG = grads.mm(grads.t()).cpu()                                                             # grad * grad^T
-        scale = (torch.diag(GG)+1e-4).sqrt().mean()                                                # Cal mean of sqrt of diagonal elements
-        GG = GG / scale.pow(2)                                                                     # Normalized by the calculated scale
-        Gg = GG.mean(1, keepdims=True)                                                             # return a mean along columns
-        gg = Gg.mean(0, keepdims=True)                                                             # return a mean along rows
+        GG = grads.mm(grads.t()).cpu()                                         # grad * grad^T
+        scale = (torch.diag(GG)+1e-4).sqrt().mean()                            # Cal mean of sqrt of diagonal elements
+        GG = GG / scale.pow(2)                                                 # Normalized by the calculated scale
+        Gg = GG.mean(1, keepdims=True)                                         # return a mean along columns
+        gg = Gg.mean(0, keepdims=True)                                         # return a mean along rows
 
         # gg is scalar
 
@@ -110,9 +110,33 @@ class FedCAGrad(Server):
             -1, 1).to(grads.device) * grads).sum(0) / (1 + self.cagrad_c**2)
         return g
 
+    def gradient_update(self, grads):
+        grad_update = []
+        def flatten_params(parameters):
+            """
+            flattens all parameters into a single column vector. Returns the dictionary to recover them
+            :param: parameters: a generator or list of all the parameters
+            :return: a dictionary: {"params": [#params, 1],
+            "indices": [(start index, end index) for each param] **Note end index in uninclusive**
 
+            """
+            l = [torch.flatten(p) for p in parameters]
+            indices = []
+            s = 0
+            for p in l:
+                size = p.shape[0]
+                indices.append((s, s + size))
+                s += size
+            flat = torch.cat(l).view(-1, 1)
+            # return {"params": flat, "indices": indices}
+            return flat.t()
 
+        for grad_model in grads:
+            grad_update.append(flatten_params(grad_model.parameters()))
 
+        grad_update = torch.vstack(grad_update)
+        # print(grad_update.size())
+        return grad_update
 
 
 
