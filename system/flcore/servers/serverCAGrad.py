@@ -85,11 +85,11 @@ class FedCAGrad(Server):
         """
         grads = grad_vec
 
-        GG = grads.mm(grads.t()).cpu()                                         # grad * grad^T
-        scale = (torch.diag(GG)+1e-4).sqrt().mean()                            # Cal mean of sqrt of diagonal elements
-        GG = GG / scale.pow(2)                                                 # Normalized by the calculated scale
-        Gg = GG.mean(1, keepdims=True)                                         # return a mean along columns
-        gg = Gg.mean(0, keepdims=True)                                         # return a mean along rows
+        GG = grads.mm(grads.t()).cpu()
+        scale = (torch.diag(GG)+1e-4).sqrt().mean()
+        GG = GG / scale.pow(2)
+        Gg = GG.mean(1, keepdims=True)
+        gg = Gg.mean(0, keepdims=True)
 
         # gg is scalar
 
