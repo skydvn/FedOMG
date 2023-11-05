@@ -181,6 +181,13 @@ class FedAvgCNN(nn.Module):
         out = self.fc(out)
         return out
 
+    def shared_model(self):
+        return [self.conv1, self.conv2, self.fc1, self.fc]
+
+    def zero_grad_shared_modlues(self):
+        for mm in self.shared_model():
+            mm.zero_grad()
+
 # ====================================================================================================================
 
 # https://github.com/katsura-jp/fedavg.pytorch/blob/master/src/models/mlp.py

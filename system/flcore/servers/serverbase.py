@@ -198,6 +198,10 @@ class Server(object):
 
         # print(grads)
 
+    def global_update(self):
+
+        pass
+
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
 
