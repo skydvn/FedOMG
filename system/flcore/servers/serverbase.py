@@ -303,10 +303,7 @@ class Server(object):
     def evaluate(self, acc=None, loss=None):
         stats = self.test_metrics()
         stats_train = self.train_metrics()
-
-        print(stats[2])
         print(sum(stats[2]))
-        print(stats[1])
         print(sum(stats[1]))
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
