@@ -10,6 +10,7 @@ import torchvision
 import logging
 
 from flcore.servers.serveravg import FedAvg
+from flcore.servers.serverCAGrad import FedCAGrad
 # from flcore.servers.serverpFedMe import pFedMe
 # from flcore.servers.serverperavg import PerAvg
 # from flcore.servers.serverprox import FedProx
@@ -61,8 +62,9 @@ torch.manual_seed(0)
 
 # hyper-params for Text tasks
 vocab_size = 98635
-max_len=200
-emb_dim=32
+max_len = 200
+emb_dim = 32
+
 
 def run(args):
 
@@ -174,6 +176,9 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
+
+        elif args.algorithm == "FedCAGrad":
+            server = FedCAGrad(args, i)
 
         # elif args.algorithm == "Local":
         #     server = Local(args, i)

@@ -199,12 +199,9 @@ class Server(object):
         # print(len(self.grads))
         # print(self.num_clients)
 
-        for index, model in enumerate(self.grads, 1):
-            print(f"index {index}")
-            print(f"model {model}")
-
-    def global_update(self):
-        pass
+        # for index, model in enumerate(self.grads, 1):
+        #     print(f"index {index}")
+        #     print(f"model {model}")
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
@@ -280,6 +277,10 @@ class Server(object):
             num_samples.append(ns)
 
         ids = [c.id for c in self.clients]
+        # print(f"ids:{ids}")
+        # print(f"num_samples:{num_samples}")
+        # print(f"tot_correct:{tot_correct}")
+        # print(f"tot_auc:{tot_auc}")
 
         return ids, num_samples, tot_correct, tot_auc
 
@@ -302,6 +303,11 @@ class Server(object):
     def evaluate(self, acc=None, loss=None):
         stats = self.test_metrics()
         stats_train = self.train_metrics()
+
+        print(stats[2])
+        print(sum(stats[2]))
+        print(stats[1])
+        print(sum(stats[1]))
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         test_auc = sum(stats[3])*1.0 / sum(stats[1])

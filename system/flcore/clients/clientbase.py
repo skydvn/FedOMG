@@ -83,6 +83,9 @@ class Client(object):
         # self.model = self.load_model('model')
         # self.model.to(self.device)
         self.model.eval()
+        # for name, param in self.model.named_parameters():
+        #     # print(f"name: {name}")
+        #     print(f"param grad: {param.grad}")
 
         test_acc = 0
         test_num = 0

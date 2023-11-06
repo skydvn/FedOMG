@@ -4,8 +4,9 @@ from flcore.clients.clientCAGrad import clientCAGrad
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
-import yaml
+from scipy.optimize import minimize
 import copy
+
 
 class FedCAGrad(Server):
     def __init__(self, args, times):
@@ -20,7 +21,7 @@ class FedCAGrad(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        self.optimizer = torch.optim.Adam(self.global_model, lr=1e-4)
+        self.optimizer = torch.optim.Adam(self.global_model.parameters(), lr=1e-4)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -38,26 +39,24 @@ class FedCAGrad(Server):
 
             self.receive_models()
             self.receive_grads()
-            # self.update_grads = gradient_update(self.grads)
 
-            # for client in self.uploaded_models:
-            #     for mm in client.shared_modules():
-            #         for param in mm.parameters:
-            #             grad_dims.append()
-            self.optimizer.zero_grad()
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
                     grad_dims.append(param.data.numel())
-            grads = torch.Tensor(sum(grad_dims), self.num_clients).cuda()
+            grads = torch.Tensor(sum(grad_dims), self.num_clients)
+            # print(self.grads)
 
             for index, model in enumerate(self.grads):
                 grad2vec(model, grads, grad_dims, index)
                 # self.global_model.zero_grad_shared_modules()
-            g = self.cagrad(grads, self.num_clients)
+            # g = self.cagrad(grads, self.num_clients)
+            # print(grads)
+            g = cagrad_test(grads, alpha=0.5, rescale=1)
+            print(f"g:{g}")
+            print(g.size())
             overwrite_grad(self.global_model, g, grad_dims)
-            self.optimizer.step()
-
+            # self.optimizer.step()
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
@@ -129,6 +128,36 @@ class FedCAGrad(Server):
         g = ((1/num_tasks + ww * lmbda).view(
             -1, 1).to(grads.device) * grads).sum(0) / (1 + self.cagrad_c**2)
         return g
+
+
+def cagrad_test(grads, alpha=0.5, rescale=1):
+    GG = grads.t().mm(grads).cpu()  # [num_tasks, num_tasks]
+    g0_norm = (GG.mean() + 1e-8).sqrt()  # norm of the average gradient
+
+    x_start = np.ones(2) / 2
+    bnds = tuple((0, 1) for x in x_start)
+    cons = ({'type': 'eq', 'fun': lambda x: 1 - sum(x)})
+    A = GG.numpy()
+    b = x_start.copy()
+    c = (alpha * g0_norm + 1e-8).item()
+
+    def objfn(x):
+        return (x.reshape(1, 2).dot(A).dot(b.reshape(2, 1)) + c * np.sqrt(
+            x.reshape(1, 2).dot(A).dot(x.reshape(2, 1)) + 1e-8)).sum()
+
+    res = minimize(objfn, x_start, bounds=bnds, constraints=cons)
+    w_cpu = res.x
+    ww = torch.Tensor(w_cpu).to(grads.device)
+    gw = (grads * ww.view(1, -1)).sum(1)
+    gw_norm = gw.norm()
+    lmbda = c / (gw_norm + 1e-8)
+    g = grads.mean(1) + lmbda * gw
+    if rescale == 0:
+        return g
+    elif rescale == 1:
+        return g / (1 + alpha ** 2)
+    else:
+        return g / (1 + alpha)
 
 
 def grad2vec(m, grads, grad_dims, task):
