@@ -20,6 +20,7 @@ class FedCAGrad(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
+        self.optimizer = torch.optim.Adam(self.global_model, lr=1e-4)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -39,17 +40,23 @@ class FedCAGrad(Server):
             self.receive_grads()
             # self.update_grads = gradient_update(self.grads)
 
+            # for client in self.uploaded_models:
+            #     for mm in client.shared_modules():
+            #         for param in mm.parameters:
+            #             grad_dims.append()
+            self.optimizer.zero_grad()
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
                     grad_dims.append(param.data.numel())
             grads = torch.Tensor(sum(grad_dims), self.num_clients).cuda()
 
-            for k in range(self.num_clients):
-                grad2vec(self.global_model, grads, grad_dims, k)
-                self.global_model.zero_grad_shared_modules()
+            for index, model in enumerate(self.grads):
+                grad2vec(model, grads, grad_dims, index)
+                # self.global_model.zero_grad_shared_modules()
             g = self.cagrad(grads, self.num_clients)
-
+            overwrite_grad(self.global_model, g, grad_dims)
+            self.optimizer.step()
 
 
             if self.dlg_eval and i % self.dlg_gap == 0:
@@ -93,10 +100,10 @@ class FedCAGrad(Server):
 
         # gg is scalar
 
-        w = torch.zeros(num_tasks, 1, requires_grad=True)                                          # w
+        w = torch.zeros(num_tasks, 1, requires_grad=True)
 
         if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)                               #
+            w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)
         else:
             w_opt = torch.optim.SGD([w], lr=25, momentum=0.5)
 
@@ -130,40 +137,24 @@ def grad2vec(m, grads, grad_dims, task):
     cnt = 0
     for mm in m.shared_modules():
         for p in mm.parameters():
-            grad = p.grad
-            if grad is not None:
-                grad_cur = grad.data.detach().clone()
-                beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
-                en = sum(grad_dims[:cnt + 1])
-                grads[beg:en, task].copy_(grad_cur.data.view(-1))
+            grad_cur = p.data.detach().clone()
+            beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+            en = sum(grad_dims[:cnt + 1])
+            grads[beg:en, task].copy_(grad_cur.data.view(-1))
             cnt += 1
 
 
-# def gradient_update(grads):
-#     grad_update = []
-#
-#     def flatten_params(parameters):
-#         """
-#         flattens all parameters into a single column vector. Returns the dictionary to recover them
-#         param: parameters: a generator or list of all the parameters
-#         return: a dictionary: {"params": [#params, 1],
-#         "indices": [(start index, end index) for each param] **Note end index in uninclusive**
-#         """
-#         l = [torch.flatten(p) for p in parameters]
-#         indices = []
-#         s = 0
-#         for p in l:
-#             size = p.shape[0]
-#             indices.append((s, s + size))
-#             s += size
-#         flat = torch.cat(l).view(-1, 1)
-#         # return {"params": flat, "indices": indices}
-#         return flat.t()
-#
-#     for grad_model in grads:
-#         grad_update.append(flatten_params(grad_model.parameters()))
-#         grad_update = torch.vstack(grad_update)
-#     return grad_update
+def overwrite_grad(m, newgrad, grad_dims):
+    newgrad = newgrad * 2  # to match the sum loss
+    cnt = 0
+    for mm in m.shared_modules():
+        for param in mm.parameters():
+            beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+            en = sum(grad_dims[:cnt + 1])
+            this_grad = newgrad[beg: en].contiguous().view(param.data.size())
+            param.grad = this_grad.data.clone()
+            cnt += 1
+
 
 
 

@@ -196,10 +196,14 @@ class Server(object):
         #     for param in model.parameters():
         #         print(param)
 
-        # print(grads)
+        # print(len(self.grads))
+        # print(self.num_clients)
+
+        for index, model in enumerate(self.grads, 1):
+            print(f"index {index}")
+            print(f"model {model}")
 
     def global_update(self):
-
         pass
 
     def aggregate_parameters(self):
