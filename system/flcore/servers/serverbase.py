@@ -68,11 +68,11 @@ class Server(object):
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
             train_data = read_client_data(self.dataset, i, is_train=True)
             test_data = read_client_data(self.dataset, i, is_train=False)
-            client = clientObj(self.args, 
-                            id=i, 
-                            train_samples=len(train_data), 
-                            test_samples=len(test_data), 
-                            train_slow=train_slow, 
+            client = clientObj(self.args,
+                            id=i,
+                            train_samples=len(train_data),
+                            test_samples=len(test_data),
+                            train_slow=train_slow,
                             send_slow=send_slow)
             self.clients.append(client)
 
@@ -106,7 +106,7 @@ class Server(object):
 
         for client in self.clients:
             start_time = time.time()
-            
+
             client.set_parameters(self.global_model)
 
             client.send_time_cost['num_rounds'] += 1
@@ -209,7 +209,7 @@ class Server(object):
         self.global_model = copy.deepcopy(self.uploaded_models[0])
         for param in self.global_model.parameters():
             param.data.zero_()
-            
+
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
 
@@ -237,7 +237,7 @@ class Server(object):
         model_path = os.path.join("models", self.dataset)
         model_path = os.path.join(model_path, self.algorithm + "_server" + ".pt")
         return os.path.exists(model_path)
-        
+
     def save_results(self):
         algo = self.dataset + "_" + self.algorithm
         result_path = "../results/"
@@ -303,8 +303,10 @@ class Server(object):
     def evaluate(self, acc=None, loss=None):
         stats = self.test_metrics()
         stats_train = self.train_metrics()
-        print(sum(stats[2]))
-        print(sum(stats[1]))
+        print(f"stats2: {stats[2]}")
+        print(f"stats1: {stats[1]}")
+        print(f"sum 2", sum(stats[2]))
+        print(f"sum 1", sum(stats[1]))
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         test_auc = sum(stats[3])*1.0 / sum(stats[1])

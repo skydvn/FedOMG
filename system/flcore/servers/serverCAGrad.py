@@ -21,13 +21,16 @@ class FedCAGrad(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=1e-4)
+        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=1e-6)
 
     def train(self):
         for i in range(self.global_rounds+1):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
+            # print(f"global_model parameters")
+            # for param in self.global_model.parameters():
+            #     print(param)
 
             if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
@@ -40,7 +43,7 @@ class FedCAGrad(Server):
             self.receive_models()
             self.receive_grads()
 
-            self.optimizer.zero_grad()
+            # self.optimizer.zero_grad()
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
@@ -50,10 +53,11 @@ class FedCAGrad(Server):
 
             for index, model in enumerate(self.grads):
                 grad2vec(model, grads, grad_dims, index)
-                # self.global_model.zero_grad_shared_modules()
+                self.global_model.zero_grad_shared_modules()
             # g = self.cagrad(grads, self.num_clients)
-            g = cagrad_test(grads, alpha=0.5, rescale=1)
+            g = cagrad_test(grads, alpha=0.5, rescale=0)
             overwrite_grad(self.global_model, g, grad_dims)
+            print(g)
             self.optimizer.step()
 
             if self.dlg_eval and i % self.dlg_gap == 0:
@@ -129,27 +133,43 @@ class FedCAGrad(Server):
 
 
 def cagrad_test(grads, alpha=0.5, rescale=1):
-    GG = grads.t().mm(grads).cpu()  # [num_tasks, num_tasks]
-    g0_norm = (GG.mean() + 1e-8).sqrt()  # norm of the average gradient
-
+    # grads: [number_parameters, number_client]
+    GG = grads.t().mm(grads).cpu()
+    """
+    GG = [C, P] * [P, C]
+    GG size [num_client, num_client]
+    [2P 4]
+    [PP 2P]
+    """
+    g0_norm = (GG.mean() + 1e-8).sqrt()
     x_start = np.ones(2) / 2
     bnds = tuple((0, 1) for x in x_start)
     cons = ({'type': 'eq', 'fun': lambda x: 1 - sum(x)})
     A = GG.numpy()
     b = x_start.copy()
     c = (alpha * g0_norm + 1e-8).item()
+    # print(f"c_value: {c}")
 
     def objfn(x):
         return (x.reshape(1, 2).dot(A).dot(b.reshape(2, 1)) + c * np.sqrt(
             x.reshape(1, 2).dot(A).dot(x.reshape(2, 1)) + 1e-8)).sum()
 
+    # print(objfn(x_start))
     res = minimize(objfn, x_start, bounds=bnds, constraints=cons)
+    # print(res)
     w_cpu = res.x
+    # print(f"w_cpu: {w_cpu}")
     ww = torch.Tensor(w_cpu).to(grads.device)
+    # print(f"ww_size: {ww.size()}")
     gw = (grads * ww.view(1, -1)).sum(1)
+    # print(f"gw_size: {gw.size()}")
     gw_norm = gw.norm()
-    lmbda = c / (gw_norm + 1e-8)
+    # print(f"gw_norm: {gw_norm}")
+    lmbda = grads.mean(1).mean() * c / (gw_norm + 1e-8)
+    # print(f"grads.mean(1): {grads.mean(1)}")
     g = grads.mean(1) + lmbda * gw
+    # print(f"g_size: {g.size()}")
+    # print(f"g: {g}")
     if rescale == 0:
         return g
     elif rescale == 1:
@@ -173,6 +193,7 @@ def grad2vec(m, grads, grad_dims, task):
 
 def overwrite_grad(m, newgrad, grad_dims):
     newgrad = newgrad * 2  # to match the sum loss
+    # print(f"newgrad: {newgrad}")
     cnt = 0
     for mm in m.shared_modules():
         for param in mm.parameters():
@@ -180,6 +201,7 @@ def overwrite_grad(m, newgrad, grad_dims):
             en = sum(grad_dims[:cnt + 1])
             this_grad = newgrad[beg: en].contiguous().view(param.data.size())
             param.grad = this_grad.data.clone()
+            # print(f"param grad: {param.grad}")
             cnt += 1
 
 

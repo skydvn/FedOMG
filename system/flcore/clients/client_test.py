@@ -1,12 +1,13 @@
 import copy
 import torch
+import torch.nn as nn
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
 from utils.privacy import *
 
 
-class clientCAGrad(Client):
+class client_test(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
@@ -42,6 +43,7 @@ class clientCAGrad(Client):
                 loss.backward()
                 self.optimizer.step()
 
+        # print(self.model.base.conv1[0].weight.grad.size())
         # self.model.cpu()
 
         if self.learning_rate_decay:

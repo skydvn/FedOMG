@@ -1,18 +1,18 @@
 import time
-from flcore.clients.clientavg import clientAVG
+from flcore.clients.client_test import client_test
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy
 # import yaml
 
 
-class FedAvg(Server):
+class Fed_test(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
         # select slow clients
         self.set_slow_clients()
-        self.set_clients(clientAVG)
+        self.set_clients(client_test)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
@@ -25,9 +25,6 @@ class FedAvg(Server):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
-            # print(f"global_model parameters")
-            # for param in self.global_model.parameters():
-            #     print(param)
 
             if i%self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
@@ -44,11 +41,8 @@ class FedAvg(Server):
 
             self.receive_models()
             self.receive_grads()
-            # for model in self.grads:
-            #     for param in model.parameters():
-            #         print(param.mean())
 
-            if self.dlg_eval and i%self.dlg_gap == 0:
+            if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
             self.aggregate_parameters()
 
@@ -68,9 +62,9 @@ class FedAvg(Server):
         self.save_results()
         self.save_global_model()
 
-        if self.num_new_clients > 0:
-            self.eval_new_clients = True
-            self.set_new_clients(clientAVG)
-            print(f"\n-------------Fine tuning round-------------")
-            print("\nEvaluate new clients")
-            self.evaluate()
+        # if self.num_new_clients > 0:
+        #     self.eval_new_clients = True
+        #     self.set_new_clients(clientAVG)
+        #     print(f"\n-------------Fine tuning round-------------")
+        #     print("\nEvaluate new clients")
+        #     self.evaluate()

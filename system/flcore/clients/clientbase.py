@@ -85,7 +85,7 @@ class Client(object):
         self.model.eval()
         # for name, param in self.model.named_parameters():
         #     # print(f"name: {name}")
-        #     print(f"param grad: {param.grad}")
+        #     print(f"param for result: {param}")
 
         test_acc = 0
         test_num = 0
@@ -120,7 +120,11 @@ class Client(object):
         y_true = np.concatenate(y_true, axis=0)
 
         auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
-        
+
+        print(f"test_acc: {test_acc}")
+        print(f"test_num: {test_num}")
+        print(f"auc: {auc}")
+
         return test_acc, test_num, auc
 
     def train_metrics(self):
