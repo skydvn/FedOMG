@@ -40,6 +40,7 @@ class FedCAGrad(Server):
             self.receive_models()
             self.receive_grads()
 
+            self.optimizer.zero_grad()
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
