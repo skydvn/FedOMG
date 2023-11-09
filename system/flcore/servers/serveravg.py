@@ -48,9 +48,12 @@ class FedAvg(Server):
             #     for param in model.parameters():
             #         print(param.mean())
 
-            if self.dlg_eval and i%self.dlg_gap == 0:
+            if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
-            self.aggregate_parameters()
+            self.model_aggregate_new()
+
+            for param in self.model_subtraction.parameters():
+                print(f"number param: {param.numel()} and param: {param.data}")
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])

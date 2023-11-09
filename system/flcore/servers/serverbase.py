@@ -44,6 +44,7 @@ class Server(object):
         self.uploaded_ids = []
         self.uploaded_models = []
         self.grads = []
+        self.model_subtraction = copy.deepcopy(args.model)
 
         self.rs_test_acc = []
         self.rs_test_auc = []
@@ -212,6 +213,19 @@ class Server(object):
 
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
+
+    def model_aggregate_new(self):
+        self.model_subtraction = copy.deepcopy(self.global_model)
+
+        self.global_model = copy.deepcopy(self.uploaded_models[0])
+        for param in self.global_model.parameters():
+            param.data.zero_()
+
+        for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
+            self.add_parameters(w, client_model)
+
+        for old_param, new_param in zip(self.model_subtraction.parameters(), self.global_model.parameters()):
+            old_param.data = new_param.data - old_param.data
 
     def add_parameters(self, w, client_model):
         for server_param, client_param in zip(self.global_model.parameters(), client_model.parameters()):

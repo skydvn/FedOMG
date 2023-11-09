@@ -31,11 +31,16 @@ class FedCAGrad(Server):
             # print(f"global_model parameters")
             # for param in self.global_model.parameters():
             #     print(param)
+            print("model")
+            print(self.global_model.conv1[0].weight)
 
             if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
+
+            # for param in self.global_model.conv1.parameters():
+            #     print(param.data)
 
             for client in self.selected_clients:
                 client.train()
@@ -58,7 +63,10 @@ class FedCAGrad(Server):
             g = cagrad_test(grads, alpha=0.5, rescale=0)
             overwrite_grad(self.global_model, g, grad_dims)
             print(g)
+            # print(g.size())
             self.optimizer.step()
+            # print("model after")
+            # print(self.global_model.conv1[0].weight)
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
