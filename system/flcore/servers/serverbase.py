@@ -317,8 +317,8 @@ class Server(object):
     def evaluate(self, acc=None, loss=None):
         stats = self.test_metrics()
         stats_train = self.train_metrics()
-        print(f"stats2: {stats[2]}")
-        print(f"stats1: {stats[1]}")
+        # print(f"stats2: {stats[2]}")
+        # print(f"stats1: {stats[1]}")
         print(f"sum 2", sum(stats[2]))
         print(f"sum 1", sum(stats[1]))
 

@@ -2,11 +2,11 @@ import time
 from flcore.clients.client_test import client_test
 from flcore.servers.serverbase import Server
 from threading import Thread
-import numpy
-# import yaml
+import numpy as np
+import torch
+from scipy.optimize import minimize
 
-
-class Fed_test(Server):
+class FedTest(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
@@ -19,6 +19,9 @@ class Fed_test(Server):
 
         # self.load_model()
         self.Budget = []
+        self.update_grads = None
+        self.cagrad_c = 0.5
+        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=0.01)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -34,13 +37,30 @@ class Fed_test(Server):
             for client in self.selected_clients:
                 client.train()
 
-            # threads = [Thread(target=client.train)
-            #            for client in self.selected_clients]
-            # [t.start() for t in threads]
-            # [t.join() for t in threads]
-
             self.receive_models()
             self.receive_grads()
+
+            grad_dims = []
+            for mm in self.global_model.shared_modules():
+                for param in mm.parameters():
+                    grad_dims.append(param.data.numel())
+            grads = torch.Tensor(sum(grad_dims), self.num_clients)
+            # print(self.grads)
+
+            for index, model in enumerate(self.grads):
+                grad2vec(model, grads, grad_dims, index)
+                self.global_model.zero_grad_shared_modules()
+            # g = cagrad_test(grads, alpha=0.5, rescale=1)
+            g = self.cagrad(grads, self.num_clients)
+            self.overwrite_grad(self.global_model, g, grad_dims)
+            # print(g)
+            # self.optimizer.step()
+            for param in self.global_model.parameters():
+                param.data -= param.grad
+
+            # print("Model_update")
+            # for param in self.global_model.parameters():
+            #     print(param)
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
@@ -53,8 +73,6 @@ class Fed_test(Server):
                 break
 
         print("\nBest accuracy.")
-        # self.print_(max(self.rs_test_acc), max(
-        #     self.rs_train_acc), min(self.rs_train_loss))
         print(max(self.rs_test_acc))
         print("\nAverage time cost per round.")
         print(sum(self.Budget[1:])/len(self.Budget[1:]))
@@ -62,9 +80,73 @@ class Fed_test(Server):
         self.save_results()
         self.save_global_model()
 
-        # if self.num_new_clients > 0:
-        #     self.eval_new_clients = True
-        #     self.set_new_clients(clientAVG)
-        #     print(f"\n-------------Fine tuning round-------------")
-        #     print("\nEvaluate new clients")
-        #     self.evaluate()
+    def cagrad(self, grad_vec, num_tasks):
+
+        grads = grad_vec
+
+        # GG = grads.mm(grads.t()).cpu()
+        GG = grads.t().mm(grads).cpu()
+        scale = (torch.diag(GG)+1e-4).sqrt().mean()
+        GG = GG / scale.pow(2)
+        Gg = GG.mean(1, keepdims=True)
+        gg = Gg.mean(0, keepdims=True)
+
+        # gg is scalar
+
+        w = torch.zeros(num_tasks, 1, requires_grad=True)
+
+        if num_tasks == 50:
+            w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)
+        else:
+            w_opt = torch.optim.SGD([w], lr=25, momentum=0.5)
+
+        c = (gg+1e-4).sqrt() * self.cagrad_c
+
+        w_best = None
+        obj_best = np.inf
+        for i in range(21):
+            w_opt.zero_grad()
+            ww = torch.softmax(w, 0)
+            # size (num_clients, 1)
+            obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
+            if obj.item() < obj_best:
+                obj_best = obj.item()
+                w_best = w.clone()
+            if i < 20:
+                obj.backward()
+                w_opt.step()
+
+        # print(w_best.size())
+        ww = torch.softmax(w_best, 0)
+        gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
+
+        lmbda = c.view(-1) / (gw_norm+1e-4)
+        g = ((1/num_tasks + ww * lmbda).view(
+            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.cagrad_c**2)
+        return g
+
+    def overwrite_grad(self, m, newgrad, grad_dims):
+        newgrad = newgrad * self.num_clients  # to match the sum loss
+        # print(f"newgrad: {newgrad}")
+        cnt = 0
+        for mm in m.shared_modules():
+            for param in mm.parameters():
+                beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+                en = sum(grad_dims[:cnt + 1])
+                this_grad = newgrad[beg: en].contiguous().view(param.data.size())
+                param.grad = this_grad.data.clone()
+                # print(f"param grad: {param.grad}")
+                cnt += 1
+
+
+def grad2vec(m, grads, grad_dims, task):
+    # store the gradients
+    grads[:, task].fill_(0.0)
+    cnt = 0
+    for mm in m.shared_modules():
+        for p in mm.parameters():
+            grad_cur = p.data.detach().clone()
+            beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+            en = sum(grad_dims[:cnt + 1])
+            grads[beg:en, task].copy_(grad_cur.data.view(-1))
+            cnt += 1

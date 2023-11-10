@@ -26,10 +26,14 @@ class FedAvg(Server):
             self.selected_clients = self.select_clients()
             self.send_models()
             # print(f"global_model parameters")
-            # for param in self.global_model.parameters():
+            # for param in self.global_model.conv1.parameters():
             #     print(param)
 
-            if i%self.eval_gap == 0:
+            # print(f"global_model parameters grad")
+            # for param in self.global_model.conv1.parameters():
+            #     print(param)
+
+            if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
@@ -37,23 +41,19 @@ class FedAvg(Server):
             for client in self.selected_clients:
                 client.train()
 
-            # threads = [Thread(target=client.train)
-            #            for client in self.selected_clients]
-            # [t.start() for t in threads]
-            # [t.join() for t in threads]
-
             self.receive_models()
             self.receive_grads()
-            # for model in self.grads:
-            #     for param in model.parameters():
-            #         print(param.mean())
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
             self.model_aggregate_new()
 
-            for param in self.model_subtraction.parameters():
-                print(f"number param: {param.numel()} and param: {param.data}")
+            # print(f"model_update")
+            # for param in self.global_model.conv1.parameters():
+            #     print(param)
+
+            # for param in self.model_subtraction.parameters():
+            #     print(f"number param: {param.numel()} and param: {param.data}")
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])

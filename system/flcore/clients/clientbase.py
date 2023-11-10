@@ -121,9 +121,9 @@ class Client(object):
 
         auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
 
-        print(f"test_acc: {test_acc}")
-        print(f"test_num: {test_num}")
-        print(f"auc: {auc}")
+        # print(f"test_acc: {test_acc}")
+        # print(f"test_num: {test_num}")
+        # print(f"auc: {auc}")
 
         return test_acc, test_num, auc
 
