@@ -46,7 +46,8 @@ class FedAvg(Server):
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
-            self.model_aggregate_new()
+            # self.model_aggregate_new()
+            self.aggregate_parameters()
 
             # print(f"model_update")
             # for param in self.global_model.conv1.parameters():

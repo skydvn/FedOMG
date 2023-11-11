@@ -354,6 +354,7 @@ if __name__ == "__main__":
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
+    # parser.add_argument('-gld', "--global_learning_rate_decay", type=bool, default=True)
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
     parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
     parser.add_argument('-gr', "--global_rounds", type=int, default=10)

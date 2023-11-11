@@ -34,6 +34,7 @@ class Server(object):
         self.save_folder_name = args.save_folder_name
         self.top_cnt = 100
         self.auto_break = args.auto_break
+        # self.global_learning_rate_decay = args.global_learning_rate_decay
 
         self.clients = []
         self.selected_clients = []

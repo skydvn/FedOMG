@@ -22,6 +22,10 @@ class FedTest(Server):
         self.update_grads = None
         self.cagrad_c = 0.5
         self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=0.01)
+        # self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
+        #     optimizer=self.optimizer,
+        #     gamma=args.learning_rate_decay_gamma
+        # )
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -29,7 +33,7 @@ class FedTest(Server):
             self.selected_clients = self.select_clients()
             self.send_models()
 
-            if i%self.eval_gap == 0:
+            if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
@@ -54,17 +58,13 @@ class FedTest(Server):
             g = self.cagrad(grads, self.num_clients)
             self.overwrite_grad(self.global_model, g, grad_dims)
             # print(g)
-            self.optimizer.step()
-            # for param in self.global_model.parameters():
-            #     param.data -= param.grad
+            # self.optimizer.step()
+            for param in self.global_model.parameters():
+                param.data += param.grad
 
-            # print("Model_update")
-            # for param in self.global_model.parameters():
-            #     print(param)
-
-            if self.dlg_eval and i % self.dlg_gap == 0:
-                self.call_dlg(i)
-            self.aggregate_parameters()
+            # if self.dlg_eval and i % self.dlg_gap == 0:
+            #     self.call_dlg(i)
+            # self.aggregate_parameters()
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
@@ -106,7 +106,7 @@ class FedTest(Server):
         obj_best = np.inf
         for i in range(21):
             w_opt.zero_grad()
-            ww = torch.softmax(w, 0)
+            ww = torch.softmax(w, dim=0)
             # size (num_clients, 1)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
             if obj.item() < obj_best:
@@ -117,7 +117,7 @@ class FedTest(Server):
                 w_opt.step()
 
         # print(w_best.size())
-        ww = torch.softmax(w_best, 0)
+        ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
 
         lmbda = c.view(-1) / (gw_norm+1e-4)
