@@ -54,9 +54,9 @@ class FedTest(Server):
             g = self.cagrad(grads, self.num_clients)
             self.overwrite_grad(self.global_model, g, grad_dims)
             # print(g)
-            # self.optimizer.step()
-            for param in self.global_model.parameters():
-                param.data -= param.grad
+            self.optimizer.step()
+            # for param in self.global_model.parameters():
+            #     param.data -= param.grad
 
             # print("Model_update")
             # for param in self.global_model.parameters():
@@ -145,7 +145,7 @@ def grad2vec(m, grads, grad_dims, task):
     cnt = 0
     for mm in m.shared_modules():
         for p in mm.parameters():
-            grad_cur = p.data.detach().clone()
+            grad_cur = p.data.clone().detach()
             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
             en = sum(grad_dims[:cnt + 1])
             grads[beg:en, task].copy_(grad_cur.data.view(-1))
