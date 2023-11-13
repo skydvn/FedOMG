@@ -29,9 +29,9 @@ class FedCAGrad(Server):
             self.selected_clients = self.select_clients()
             self.send_models()
 
-            print(f"global_model parameters grad")
-            for param in self.global_model.parameters():
-                print(param.grad)
+            # print(f"global_model parameters grad")
+            # for param in self.global_model.parameters():
+            #     print(param.grad)
             # print("model")
             # print(self.global_model.conv1[0].weight)
 
@@ -65,11 +65,11 @@ class FedCAGrad(Server):
             # print(g)
             # self.optimizer.step()
             for param in self.global_model.parameters():
-                param.data += 0.8 * param.grad
+                param.data += param.grad
 
-            print("Model_update")
-            for param in self.global_model.parameters():
-                print(param.grad)
+            # print("Model_update")
+            # for param in self.global_model.parameters():
+            #     print(param.grad)
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
@@ -123,7 +123,7 @@ def cagrad_test(grads, alpha=0.5, rescale=1):
     res = minimize(objfn, x_start, bounds=bnds, constraints=cons)
     # print(res)
     w_cpu = res.x
-    # print(f"w_cpu: {w_cpu}")
+    print(f"w_cpu: {w_cpu}")
     ww = torch.Tensor(w_cpu).to(grads.device)
     # print(f"ww_size: {ww.size()}")
     gw = (grads * ww.view(1, -1)).sum(1)

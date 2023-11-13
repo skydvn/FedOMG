@@ -17,6 +17,7 @@ class Client(object):
 
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         self.model = copy.deepcopy(args.model)
+        self.store_gradient_model = copy.deepcopy(args.model)
         self.algorithm = args.algorithm
         self.dataset = args.dataset
         self.device = args.device
@@ -146,9 +147,6 @@ class Client(object):
                 loss = self.loss(output, y)
                 train_num += y.shape[0]
                 losses += loss.item() * y.shape[0]
-
-        # self.model.cpu()
-        # self.save_model(self.model, 'model')
 
         return losses, train_num
 

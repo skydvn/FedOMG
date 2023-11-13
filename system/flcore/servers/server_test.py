@@ -22,12 +22,7 @@ class FedTest(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=10)
-        # self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
-        #     optimizer=self.optimizer,
-        #     gamma=args.learning_rate_decay_gamma
-        # )
-        self.server_grads = []
+        # self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=10)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -46,16 +41,6 @@ class FedTest(Server):
             self.receive_models()
             self.receive_grads()
 
-            self.server_grads = copy.deepcopy(self.grads)
-            for model in self.server_grads:
-                for param in model:
-                    param.data.zero_()
-
-            # for agg_model, old_model in zip(self.server_grads, self.grads):
-            #     for agg_param, up_param in zip(agg_model.parmeters(), old_model.parameters()):
-            #         agg_param.data =
-            #
-
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
@@ -69,7 +54,7 @@ class FedTest(Server):
                 grad2vec(model, grads, grad_dims, index)
                 self.global_model.zero_grad_shared_modules()
             # g = cagrad_test(grads, alpha=0.5, rescale=1)
-            g, ww = self.cagrad(grads, self.num_clients)
+            g = self.cagrad(grads, self.num_clients)
 
             self.overwrite_grad(self.global_model, g, grad_dims)
             for param in self.global_model.parameters():
@@ -120,7 +105,7 @@ class FedTest(Server):
 
         w_best = None
         obj_best = np.inf
-        for i in range(21):
+        for i in range(41):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             # size (num_clients, 1)
@@ -128,7 +113,7 @@ class FedTest(Server):
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
-            if i < 20:
+            if i < 40:
                 obj.backward()
                 w_opt.step()
 

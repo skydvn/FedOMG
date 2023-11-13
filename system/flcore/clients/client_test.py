@@ -10,11 +10,10 @@ from utils.privacy import *
 class client_test(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
-        self.grad_store = []
 
     def train(self):
+
         trainloader = self.load_train_data()
-        # self.model.to(self.device)
         self.model.train()
 
         # differential privacy
@@ -28,6 +27,12 @@ class client_test(Client):
         max_local_epochs = self.local_epochs
         if self.train_slow:
             max_local_epochs = np.random.randint(1, max_local_epochs // 2)
+
+        # for param in self.store_gradient_model.parameters():
+        #     param.data.zero_()
+        #
+        # for param in self.store_gradient_model.parameters():
+        #     print(param.data)
 
         for step in range(max_local_epochs):
             for i, (x, y) in enumerate(trainloader):
@@ -43,10 +48,21 @@ class client_test(Client):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
-                
 
-        # print(self.model.base.conv1[0].weight.grad.size())
-        # self.model.cpu()
+            # for param, global_param in zip(self.store_gradient_model.parameters(), self.model.parameters()):
+            #     param.data += global_param.grad
+
+        # for param, global_param in zip(self.store_gradient_model.parameters(), self.model.parameters()):
+        #     print(param.data - global_param.grad)
+
+        # for param in self.store_gradient_model.parameters():
+        #     param.data /= max_local_epochs
+
+        # for param, global_param in zip(self.store_gradient_model.parameters(), self.model.parameters()):
+        #     print(param.data - global_param.grad)
+
+        # for param in self.store_gradient_model.parameters():
+        #     print(param.data)
 
         if self.learning_rate_decay:
             self.learning_rate_scheduler.step()
@@ -54,11 +70,12 @@ class client_test(Client):
         self.train_time_cost['num_rounds'] += 1
         self.train_time_cost['total_cost'] += time.time() - start_time
 
-        if self.privacy:
-            eps, DELTA = get_dp_params(privacy_engine)
-            print(f"Client {self.id}", f"epsilon = {eps:.2f}, sigma = {DELTA}")
+        # if self.privacy:
+        #     eps, DELTA = get_dp_params(privacy_engine)
+        #     print(f"Client {self.id}", f"epsilon = {eps:.2f}, sigma = {DELTA}")
+        #
+        #     for param, param_dp in zip(model_origin.parameters(), self.model.parameters()):
+        #         param.data = param_dp.data.clone()
+        #     self.model = model_origin
+        #     self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
 
-            for param, param_dp in zip(model_origin.parameters(), self.model.parameters()):
-                param.data = param_dp.data.clone()
-            self.model = model_origin
-            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)

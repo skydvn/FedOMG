@@ -44,6 +44,7 @@ class Server(object):
         self.uploaded_weights = []
         self.uploaded_ids = []
         self.uploaded_models = []
+        self.uploaded_gradients = []
         self.grads = []
         self.model_subtraction = copy.deepcopy(args.model)
 
@@ -128,6 +129,7 @@ class Server(object):
         self.uploaded_ids = []
         self.uploaded_weights = []
         self.uploaded_models = []
+        self.uploaded_gradients = []
         tot_samples = 0
 
         for client in active_clients:
@@ -144,6 +146,7 @@ class Server(object):
                 self.uploaded_ids.append(client.id)
                 self.uploaded_weights.append(client.train_samples)  # train_samples = len(train_data)
                 self.uploaded_models.append(client.model)
+                self.uploaded_gradients.append(client.store_gradient_model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
 
@@ -164,46 +167,18 @@ class Server(object):
         for model in self.grads:
             for param in model.parameters():
                 param.data.zero_()
-        # Set all in place value to zero to store new gradient value
 
         for grad_model, local_model in zip(self.grads, self.uploaded_models):
             for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
                                                              self.global_model.parameters()):
                 grad_param.data = local_param.data - global_param.data
 
-        # for grad_model in self.grads:
-        #     grad_update.append(flatten_params(grad_model.parameters()))
-        #
-        # grad_update = torch.vstack(grad_update)
-        # print(grad_update.size())
+        for w, client_model in zip(self.uploaded_weights, self.grads):
+            self.mul_params(w, client_model)
 
-        # for model in self.grads:
-        #     print(model)
-        #     for name, param in model.named_parameters():
-        #         print(f"name: {name}")
-        #         # print(f"param: {param}")
-        #         print(f"size: {param.size()}")
-
-        # for i, model in enumerate(self.grads, 1):
-        #     print(f"client", i)
-        #     print(f"model", model)
-        #     for param in model.parameters():
-        #         # print(f"name", name)
-        #         print(param.size())
-        #         # print(param)
-        #         if torch.is_tensor(param):
-        #             print("The variable is a PyTorch tensor.")
-
-        # for model in self.grads:
-        #     for param in model.parameters():
-        #         print(param)
-
-        # print(len(self.grads))
-        # print(self.num_clients)
-
-        # for index, model in enumerate(self.grads, 1):
-        #     print(f"index {index}")
-        #     print(f"model {model}")
+    def mul_params(self, w, client_model):
+        for param in client_model.parameters():
+            param.data = param.data.clone() * w
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
