@@ -21,7 +21,7 @@ class FedCAGrad(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=0.01)
+        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=1)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -29,9 +29,9 @@ class FedCAGrad(Server):
             self.selected_clients = self.select_clients()
             self.send_models()
 
-            # print(f"global_model parameters grad")
-            # for param in self.global_model.parameters():
-            #     print(param)
+            print(f"global_model parameters grad")
+            for param in self.global_model.parameters():
+                print(param.grad)
             # print("model")
             # print(self.global_model.conv1[0].weight)
 
@@ -49,7 +49,7 @@ class FedCAGrad(Server):
             self.receive_models()
             self.receive_grads()
 
-            # self.optimizer.zero_grad()
+            self.optimizer.zero_grad()
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
@@ -61,16 +61,15 @@ class FedCAGrad(Server):
                 grad2vec(model, grads, grad_dims, index)
                 self.global_model.zero_grad_shared_modules()
             g = cagrad_test(grads, alpha=0.5, rescale=1)
-            # g = self.cagrad(grads, self.num_clients)
             overwrite_grad(self.global_model, g, grad_dims)
             # print(g)
             # self.optimizer.step()
             for param in self.global_model.parameters():
-                param.data += param.grad
+                param.data += 0.8 * param.grad
 
-            # print("Model_update")
-            # for param in self.global_model.parameters():
-            #     print(param)
+            print("Model_update")
+            for param in self.global_model.parameters():
+                print(param.grad)
 
             if self.dlg_eval and i % self.dlg_gap == 0:
                 self.call_dlg(i)
@@ -97,53 +96,6 @@ class FedCAGrad(Server):
             print("\nEvaluate new clients")
             self.evaluate()
 
-    def cagrad(self, grad_vec, num_tasks):
-        """
-        grad_vec: [num_tasks, dim]
-        """
-        grads = grad_vec
-
-        # GG = grads.mm(grads.t()).cpu()
-        GG = grads.t().mm(grads).cpu()
-        scale = (torch.diag(GG)+1e-4).sqrt().mean()
-        GG = GG / scale.pow(2)
-        Gg = GG.mean(1, keepdims=True)
-        gg = Gg.mean(0, keepdims=True)
-
-        # gg is scalar
-
-        w = torch.zeros(num_tasks, 1, requires_grad=True)
-
-        if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)
-        else:
-            w_opt = torch.optim.SGD([w], lr=25, momentum=0.5)
-
-        c = (gg+1e-4).sqrt() * self.cagrad_c
-
-        w_best = None
-        obj_best = np.inf
-        for i in range(21):
-            w_opt.zero_grad()
-            ww = torch.softmax(w, 0)
-            # size (num_clients, 1)
-            obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
-            if obj.item() < obj_best:
-                obj_best = obj.item()
-                w_best = w.clone()
-            if i < 20:
-                obj.backward()
-                w_opt.step()
-
-        # print(w_best.size())
-        ww = torch.softmax(w_best, 0)
-        gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
-
-        lmbda = c.view(-1) / (gw_norm+1e-4)
-        g = ((1/num_tasks + ww * lmbda).view(
-            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.cagrad_c**2)
-        return g
-
 
 def cagrad_test(grads, alpha=0.5, rescale=1):
     # grads: [number_parameters, number_client]
@@ -155,7 +107,7 @@ def cagrad_test(grads, alpha=0.5, rescale=1):
     [PP 2P]
     """
     g0_norm = (GG.mean() + 1e-8).sqrt()
-    x_start = np.ones(5) / 5
+    x_start = np.ones(2) / 2
     bnds = tuple((0, 1) for x in x_start)
     cons = ({'type': 'eq', 'fun': lambda x: 1 - sum(x)})
     A = GG.numpy()
@@ -164,8 +116,8 @@ def cagrad_test(grads, alpha=0.5, rescale=1):
     # print(f"c_value: {c}")
 
     def objfn(x):
-        return (x.reshape(1, 5).dot(A).dot(b.reshape(5, 1)) + c * np.sqrt(
-            x.reshape(1, 5).dot(A).dot(x.reshape(5, 1)) + 1e-8)).sum()
+        return (x.reshape(1, 2).dot(A).dot(b.reshape(2, 1)) + c * np.sqrt(
+            x.reshape(1, 2).dot(A).dot(x.reshape(2, 1)) + 1e-8)).sum()
 
     # print(objfn(x_start))
     res = minimize(objfn, x_start, bounds=bnds, constraints=cons)
@@ -205,7 +157,7 @@ def grad2vec(m, grads, grad_dims, task):
 
 
 def overwrite_grad(m, newgrad, grad_dims):
-    newgrad = newgrad * 5  # to match the sum loss
+    newgrad = newgrad * 2  # to match the sum loss
     # print(f"newgrad: {newgrad}")
     cnt = 0
     for mm in m.shared_modules():

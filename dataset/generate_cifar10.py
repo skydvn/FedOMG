@@ -12,7 +12,7 @@ random.seed(1)
 np.random.seed(1)
 num_clients = 20
 num_classes = 10
-dir_path = "Cifar10/"
+dir_path = "dataset/Cifar10/"
 
 
 # Allocate data to users

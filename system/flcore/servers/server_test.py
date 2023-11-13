@@ -1,3 +1,4 @@
+import copy
 import time
 from flcore.clients.client_test import client_test
 from flcore.servers.serverbase import Server
@@ -21,11 +22,12 @@ class FedTest(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=0.01)
+        self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=10)
         # self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
         #     optimizer=self.optimizer,
         #     gamma=args.learning_rate_decay_gamma
         # )
+        self.server_grads = []
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -44,23 +46,37 @@ class FedTest(Server):
             self.receive_models()
             self.receive_grads()
 
+            self.server_grads = copy.deepcopy(self.grads)
+            for model in self.server_grads:
+                for param in model:
+                    param.data.zero_()
+
+            # for agg_model, old_model in zip(self.server_grads, self.grads):
+            #     for agg_param, up_param in zip(agg_model.parmeters(), old_model.parameters()):
+            #         agg_param.data =
+            #
+
             grad_dims = []
             for mm in self.global_model.shared_modules():
                 for param in mm.parameters():
                     grad_dims.append(param.data.numel())
             grads = torch.Tensor(sum(grad_dims), self.num_clients)
-            # print(self.grads)
+            # print(grad_dims)
+            # print(grads.size())
+            # size(582026, 2)
 
             for index, model in enumerate(self.grads):
                 grad2vec(model, grads, grad_dims, index)
                 self.global_model.zero_grad_shared_modules()
             # g = cagrad_test(grads, alpha=0.5, rescale=1)
-            g = self.cagrad(grads, self.num_clients)
+            g, ww = self.cagrad(grads, self.num_clients)
+
             self.overwrite_grad(self.global_model, g, grad_dims)
-            # print(g)
-            # self.optimizer.step()
             for param in self.global_model.parameters():
                 param.data += param.grad
+
+            # for param in self.global_model.parameters():
+            #     print(param.grad)
 
             # if self.dlg_eval and i % self.dlg_gap == 0:
             #     self.call_dlg(i)
@@ -83,8 +99,8 @@ class FedTest(Server):
     def cagrad(self, grad_vec, num_tasks):
 
         grads = grad_vec
+        # size(582026, num_clients)
 
-        # GG = grads.mm(grads.t()).cpu()
         GG = grads.t().mm(grads).cpu()
         scale = (torch.diag(GG)+1e-4).sqrt().mean()
         GG = GG / scale.pow(2)
@@ -116,7 +132,6 @@ class FedTest(Server):
                 obj.backward()
                 w_opt.step()
 
-        # print(w_best.size())
         ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
 
@@ -145,7 +160,7 @@ def grad2vec(m, grads, grad_dims, task):
     cnt = 0
     for mm in m.shared_modules():
         for p in mm.parameters():
-            grad_cur = p.data.clone().detach()
+            grad_cur = p.data.detach().clone()
             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
             en = sum(grad_dims[:cnt + 1])
             grads[beg:en, task].copy_(grad_cur.data.view(-1))

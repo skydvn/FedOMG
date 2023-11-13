@@ -10,6 +10,7 @@ from utils.privacy import *
 class client_test(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
+        self.grad_store = []
 
     def train(self):
         trainloader = self.load_train_data()
@@ -42,6 +43,7 @@ class client_test(Client):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+                
 
         # print(self.model.base.conv1[0].weight.grad.size())
         # self.model.cpu()
