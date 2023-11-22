@@ -77,7 +77,7 @@ class FedTest(Server):
 
         grads = grad_vec
 
-        GG = grads.t().mm(grads).cpu()
+        GG = grads.t().mm(grads).cuda()
         # to(device)
         scale = (torch.diag(GG)+1e-4).sqrt().mean()
         GG = GG / scale.pow(2)
@@ -121,8 +121,8 @@ class FedTest(Server):
             for param in mm.parameters():
                 beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
                 en = sum(grad_dims[:cnt + 1])
-                this_grad = newgrad[beg: en].contiguous().view(param.data.size())
-                param.grad = this_grad.data.clone()
+                this_grad = newgrad[beg: en].contiguous().view(param.data.size()).cuda()
+                param.grad = this_grad.data.clone().cuda()
                 cnt += 1
 
 
