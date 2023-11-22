@@ -5,7 +5,6 @@ from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
 import torch
-from scipy.optimize import minimize
 
 class FedTest(Server):
     def __init__(self, args, times):
@@ -18,11 +17,9 @@ class FedTest(Server):
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
 
-        # self.load_model()
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
-        # self.optimizer = torch.optim.SGD(self.global_model.parameters(), lr=10)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -46,22 +43,17 @@ class FedTest(Server):
                 for param in mm.parameters():
                     grad_dims.append(param.data.numel())
             grads = torch.Tensor(sum(grad_dims), self.num_clients)
-            # print(grad_dims)
-            # print(grads.size())
-            # size(582026, 2)
+            #.cuda()
 
             for index, model in enumerate(self.grads):
                 grad2vec(model, grads, grad_dims, index)
                 self.global_model.zero_grad_shared_modules()
-            # g = cagrad_test(grads, alpha=0.5, rescale=1)
+
             g = self.cagrad(grads, self.num_clients)
 
             self.overwrite_grad(self.global_model, g, grad_dims)
             for param in self.global_model.parameters():
                 param.data += param.grad
-
-            # for param in self.global_model.parameters():
-            #     print(param.grad)
 
             # if self.dlg_eval and i % self.dlg_gap == 0:
             #     self.call_dlg(i)
@@ -84,15 +76,13 @@ class FedTest(Server):
     def cagrad(self, grad_vec, num_tasks):
 
         grads = grad_vec
-        # size(582026, num_clients)
 
         GG = grads.t().mm(grads).cpu()
+        # to(device)
         scale = (torch.diag(GG)+1e-4).sqrt().mean()
         GG = GG / scale.pow(2)
         Gg = GG.mean(1, keepdims=True)
         gg = Gg.mean(0, keepdims=True)
-
-        # gg is scalar
 
         w = torch.zeros(num_tasks, 1, requires_grad=True)
 
@@ -108,7 +98,6 @@ class FedTest(Server):
         for i in range(41):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
-            # size (num_clients, 1)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
             if obj.item() < obj_best:
                 obj_best = obj.item()
@@ -127,7 +116,6 @@ class FedTest(Server):
 
     def overwrite_grad(self, m, newgrad, grad_dims):
         newgrad = newgrad * self.num_clients  # to match the sum loss
-        # print(f"newgrad: {newgrad}")
         cnt = 0
         for mm in m.shared_modules():
             for param in mm.parameters():
@@ -135,12 +123,10 @@ class FedTest(Server):
                 en = sum(grad_dims[:cnt + 1])
                 this_grad = newgrad[beg: en].contiguous().view(param.data.size())
                 param.grad = this_grad.data.clone()
-                # print(f"param grad: {param.grad}")
                 cnt += 1
 
 
 def grad2vec(m, grads, grad_dims, task):
-    # store the gradients
     grads[:, task].fill_(0.0)
     cnt = 0
     for mm in m.shared_modules():
