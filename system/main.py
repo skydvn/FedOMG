@@ -447,6 +447,13 @@ if __name__ == "__main__":
     # GPFL
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
+    # FedCAGrad
+    parser.add_argument('-car', "--cagrad_rounds", type=int, default=100)
+    parser.add_argument('-calr', "--cagrad_learning_rate", type=float, default=25)
+    parser.add_argument('-mmt', "--momentum", type=float, default=0.5)
+    parser.add_argument('-ss', "--step_size", type=int, default=30)
+    parser.add_argument('-gam', "--gamma", type=float, default=0.5)
+
     # RotoGrad
     # parser.add_argument('-starting point', type=int, default=4,
     #                     help="Starting point in the layer for rotate matrix")
@@ -494,7 +501,6 @@ if __name__ == "__main__":
     print("Total number of new clients: {}".format(args.num_new_clients))
     print("Fine tuning epoches on new clients: {}".format(args.fine_tuning_epoch))
     print("=" * 50)
-
 
     # if args.dataset == "mnist" or args.dataset == "fmnist":
     #     generate_mnist('../dataset/mnist/', args.num_clients, 10, args.niid)

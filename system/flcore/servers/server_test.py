@@ -5,6 +5,7 @@ from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
 import torch
+from torch.optim.lr_scheduler import StepLR
 
 class FedTest(Server):
     def __init__(self, args, times):
@@ -20,6 +21,11 @@ class FedTest(Server):
         self.Budget = []
         self.update_grads = None
         self.cagrad_c = 0.5
+        self.cagrad_rounds = args.cagrad_rounds
+        self.cagrad_learning_rate = args.cagrad_learning_rate
+        self.momentum = args.momentum
+        self.step_size = args.step_size
+        self.gamma = args.gamma
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -43,7 +49,6 @@ class FedTest(Server):
                 for param in mm.parameters():
                     grad_dims.append(param.data.numel())
             grads = torch.Tensor(sum(grad_dims), self.num_clients)
-            #.cuda()
 
             for index, model in enumerate(self.grads):
                 grad2vec(model, grads, grad_dims, index)
@@ -87,24 +92,27 @@ class FedTest(Server):
         w = torch.zeros(num_tasks, 1, requires_grad=True)
 
         if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=50, momentum=0.5)
+            w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate*2, momentum=self.momentum)
         else:
-            w_opt = torch.optim.SGD([w], lr=25, momentum=0.5)
+            w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate, momentum=self.momentum)
+
+        scheduler = StepLR(w_opt, step_size=self.step_size, gamma=self.gamma)
 
         c = (gg+1e-4).sqrt() * self.cagrad_c
 
         w_best = None
         obj_best = np.inf
-        for i in range(41):
+        for i in range(self.cagrad_rounds+1):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
-            if i < 40:
+            if i < self.cagrad_rounds:
                 obj.backward()
                 w_opt.step()
+                scheduler.step()
 
         ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
