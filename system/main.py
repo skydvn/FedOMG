@@ -110,6 +110,12 @@ def run(args):
         
         elif model_str == "resnet":
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
+
+        elif model_str == "resnet8":
+            args.model = resnet8(num_classes=args.num_classes).to(args.device)
+
+        elif model_str == "resnet10":
+            args.model = resnet10(num_classes=args.num_classes).to(args.device)
             
             # args.model = torchvision.models.resnet18(pretrained=True).to(args.device)
             # feature_dim = list(args.model.fc.parameters())[0].shape[1]
