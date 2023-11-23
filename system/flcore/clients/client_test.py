@@ -50,3 +50,5 @@ class client_test(Client):
         self.train_time_cost['num_rounds'] += 1
         self.train_time_cost['total_cost'] += time.time() - start_time
 
+    def shared_modules(self):
+        return [self.model.conv1, self.conv2, self.fc1, self.fc]

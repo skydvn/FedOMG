@@ -44,19 +44,15 @@ class FedTest(Server):
             self.receive_models()
             self.receive_grads()
 
-            grad_dims = []
-            for mm in self.global_model.shared_modules():
-                for param in mm.parameters():
-                    grad_dims.append(param.data.numel())
-            grads = torch.Tensor(sum(grad_dims), self.num_clients)
+            grad_ez = sum(p.numel() for p in self.global_model.parameters())
+            grads = torch.Tensor(grad_ez, self.num_clients)
 
             for index, model in enumerate(self.grads):
-                grad2vec(model, grads, grad_dims, index)
-                self.global_model.zero_grad_shared_modules()
+                grad2vec2(model, grads, index)
 
             g = self.cagrad(grads, self.num_clients)
 
-            self.overwrite_grad(self.global_model, g, grad_dims)
+            self.overwrite_grad2(self.global_model, g)
             for param in self.global_model.parameters():
                 param.data += param.grad
 
@@ -122,25 +118,48 @@ class FedTest(Server):
             -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.cagrad_c**2)
         return g
 
-    def overwrite_grad(self, m, newgrad, grad_dims):
-        newgrad = newgrad * self.num_clients  # to match the sum loss
-        cnt = 0
-        for mm in m.shared_modules():
-            for param in mm.parameters():
-                beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
-                en = sum(grad_dims[:cnt + 1])
-                this_grad = newgrad[beg: en].contiguous().view(param.data.size())
-                param.grad = this_grad.data.clone()
-                cnt += 1
+    # def overwrite_grad(self, m, newgrad, grad_dims):
+    #     newgrad = newgrad * self.num_clients  # to match the sum loss
+    #     cnt = 0
+    #     for mm in m.shared_modules():
+    #         for param in mm.parameters():
+    #             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+    #             en = sum(grad_dims[:cnt + 1])
+    #             this_grad = newgrad[beg: en].contiguous().view(param.data.size())
+    #             param.grad = this_grad.data.clone()
+    #             cnt += 1
+
+    def overwrite_grad2(self, m, newgrad):
+        newgrad = newgrad * self.num_clients
+        for param in m.parameters():
+            # Get the number of elements in the current parameter
+            num_elements = param.numel()
+
+            # Extract a slice of new_params with the same number of elements
+            param_slice = newgrad[:num_elements]
+
+            # Reshape the slice to match the shape of the current parameter
+            param.grad = param_slice.view(param.data.size())
+
+            # Move to the next slice in new_params
+            newgrad = newgrad[num_elements:]
 
 
-def grad2vec(m, grads, grad_dims, task):
+# def grad2vec(m, grads, grad_dims, task):
+#     grads[:, task].fill_(0.0)
+#     cnt = 0
+#     for mm in m.shared_modules():
+#         for p in mm.parameters():
+#             grad_cur = p.data.detach().clone()
+#             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
+#             en = sum(grad_dims[:cnt + 1])
+#             grads[beg:en, task].copy_(grad_cur.data.view(-1))
+#             cnt += 1
+
+
+def grad2vec2(m, grads, task):
     grads[:, task].fill_(0.0)
-    cnt = 0
-    for mm in m.shared_modules():
-        for p in mm.parameters():
-            grad_cur = p.data.detach().clone()
-            beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
-            en = sum(grad_dims[:cnt + 1])
-            grads[beg:en, task].copy_(grad_cur.data.view(-1))
-            cnt += 1
+    all_params = torch.cat([param.detach().view(-1) for param in m.parameters()])
+    # print(all_params.size())
+    grads[:, task].copy_(all_params)
+
