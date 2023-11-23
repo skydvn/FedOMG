@@ -80,16 +80,16 @@ class FedTest(Server):
 
     def cagrad(self, grad_vec, num_tasks):
 
-        grads = grad_vec
+        grads = grad_vec.cuda()
 
-        GG = grads.t().mm(grads).cuda()
+        GG = grads.t().mm(grads)
         # to(device)
         scale = (torch.diag(GG)+1e-4).sqrt().mean()
         GG = GG / scale.pow(2)
         Gg = GG.mean(1, keepdims=True)
         gg = Gg.mean(0, keepdims=True)
 
-        w = torch.zeros(num_tasks, 1, requires_grad=True)
+        w = torch.zeros(num_tasks, 1, requires_grad=True, device='cuda')
 
         if num_tasks == 50:
             w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate*2, momentum=self.momentum)
@@ -129,8 +129,8 @@ class FedTest(Server):
             for param in mm.parameters():
                 beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
                 en = sum(grad_dims[:cnt + 1])
-                this_grad = newgrad[beg: en].contiguous().view(param.data.size()).cuda()
-                param.grad = this_grad.data.clone().cuda()
+                this_grad = newgrad[beg: en].contiguous().view(param.data.size())
+                param.grad = this_grad.data.clone()
                 cnt += 1
 
 
