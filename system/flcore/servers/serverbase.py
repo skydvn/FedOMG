@@ -242,7 +242,7 @@ class Server(object):
             os.makedirs(result_path)
 
         if (len(self.rs_test_acc)):
-            algo = (algo + "_" + self.goal + "_" + self.cagrad_rounds + "_" + self.ca_lr + "_"
+            algo = (algo + "_" + self.cagrad_rounds + "_" + self.ca_lr + "_"
                     + self.mmt + "_" + self.ss + "_" + self.gam)
             file_path = result_path + "{}.h5".format(algo)
             print("File path: " + file_path)
