@@ -110,6 +110,8 @@ class FedTest(Server):
                 w_opt.step()
                 scheduler.step()
 
+                # Check this scheduler. step()
+
         ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
 
