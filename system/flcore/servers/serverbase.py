@@ -36,6 +36,13 @@ class Server(object):
         self.auto_break = args.auto_break
         # self.global_learning_rate_decay = args.global_learning_rate_decay
 
+        self.cagrad_rounds = args.cagrad_rounds
+        self.ca_lr = args.cagrad_learning_rate
+        self.mmt = args.momentum
+        self.ss = args.step_size
+        self.gam = args.gamma
+
+
         self.clients = []
         self.selected_clients = []
         self.train_slow_clients = []
@@ -235,7 +242,8 @@ class Server(object):
             os.makedirs(result_path)
 
         if (len(self.rs_test_acc)):
-            algo = algo + "_" + self.goal + "_" + str(self.times)
+            algo = (algo + "_" + self.goal + "_" + self.cagrad_rounds + "_" + self.ca_lr + "_"
+                    + self.mmt + "_" + self.ss + "_" + self.gam)
             file_path = result_path + "{}.h5".format(algo)
             print("File path: " + file_path)
 
