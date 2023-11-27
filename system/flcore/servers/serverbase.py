@@ -41,6 +41,7 @@ class Server(object):
         self.mmt = args.momentum
         self.ss = args.step_size
         self.gam = args.gamma
+        self.model_str = args.model
 
 
         self.clients = []
@@ -242,8 +243,8 @@ class Server(object):
             os.makedirs(result_path)
 
         if (len(self.rs_test_acc)):
-            algo = (algo + "_" + self.cagrad_rounds + "_" + self.ca_lr + "_"
-                    + self.mmt + "_" + self.ss + "_" + self.gam)
+            algo = (algo + "_" + self.global_rounds + "_" + self.model_str + "_" + self.cagrad_rounds
+                    + "_" + self.ca_lr + "_" + self.mmt + "_" + self.ss + "_" + self.gam + "_" + self.batch_size)
             file_path = result_path + "{}.h5".format(algo)
             print("File path: " + file_path)
 
