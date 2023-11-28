@@ -71,7 +71,7 @@ def run(args):
 
     time_list = []
     reporter = MemReporter()
-    model_str = args.model
+    model_str = args.model_str
 
     for i in range(args.prev, args.times):
         print(f"\n============= Running time: {i}th =============")
@@ -356,6 +356,7 @@ if __name__ == "__main__":
     parser.add_argument('-did', "--device_id", type=str, default="0")
     parser.add_argument('-data', "--dataset", type=str, default="mnist")
     parser.add_argument('-nb', "--num_classes", type=int, default=10)
+    parser.add_argument('-mstr', "--model_str", type=str, default="cnn")
     parser.add_argument('-m', "--model", type=str, default="cnn")
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
