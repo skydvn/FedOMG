@@ -1,0 +1,105 @@
+Join ratio / total clients: 1.0 / 20
+Finished creating server and clients.
+-------------Round number: 0-------------
+Evaluate global model
+Averaged Train Loss: 2.3014
+Averaged Test Accurancy: 0.1150
+Averaged Test AUC: 0.5100
+Std Test Accurancy: 0.2115
+Std Test AUC: 0.2512
+Logging
+------------------------- time cost ------------------------- 17.194902896881104
+-------------Round number: 1-------------
+Evaluate global model
+Averaged Train Loss: 2.0323
+Averaged Test Accurancy: 0.2792
+Averaged Test AUC: 0.7370
+Std Test Accurancy: 0.2495
+Std Test AUC: 0.1533
+Logging
+------------------------- time cost ------------------------- 17.056159734725952
+-------------Round number: 2-------------
+Evaluate global model
+Averaged Train Loss: 2.1053
+Averaged Test Accurancy: 0.2275
+Averaged Test AUC: 0.6838
+Std Test Accurancy: 0.2412
+Std Test AUC: 0.1673
+Logging
+------------------------- time cost ------------------------- 16.949865579605103
+-------------Round number: 3-------------
+Evaluate global model
+Averaged Train Loss: 2.1770
+Averaged Test Accurancy: 0.2193
+Averaged Test AUC: 0.6450
+Std Test Accurancy: 0.2361
+Std Test AUC: 0.1936
+Logging
+------------------------- time cost ------------------------- 17.11286997795105
+-------------Round number: 4-------------
+Evaluate global model
+Averaged Train Loss: 2.1879
+Averaged Test Accurancy: 0.2035
+Averaged Test AUC: 0.6481
+Std Test Accurancy: 0.2186
+Std Test AUC: 0.1944
+Logging
+------------------------- time cost ------------------------- 17.024351358413696
+-------------Round number: 5-------------
+Evaluate global model
+Averaged Train Loss: 2.2214
+Averaged Test Accurancy: 0.1939
+Averaged Test AUC: 0.6370
+Std Test Accurancy: 0.2045
+Std Test AUC: 0.1961
+Logging
+------------------------- time cost ------------------------- 36.07488489151001
+-------------Round number: 6-------------
+Evaluate global model
+Averaged Train Loss: 2.1908
+Averaged Test Accurancy: 0.2125
+Averaged Test AUC: 0.6522
+Std Test Accurancy: 0.2082
+Std Test AUC: 0.1944
+Logging
+------------------------- time cost ------------------------- 24.473545789718628
+-------------Round number: 7-------------
+Evaluate global model
+Averaged Train Loss: 2.2083
+Averaged Test Accurancy: 0.2122
+Averaged Test AUC: 0.6434
+Std Test Accurancy: 0.2066
+Std Test AUC: 0.2007
+Logging
+------------------------- time cost ------------------------- 19.675001621246338
+-------------Round number: 8-------------
+Evaluate global model
+Averaged Train Loss: 2.1853
+Averaged Test Accurancy: 0.2202
+Averaged Test AUC: 0.6487
+Std Test Accurancy: 0.1979
+Std Test AUC: 0.1884
+Logging
+------------------------- time cost ------------------------- 17.96134877204895
+-------------Round number: 9-------------
+Evaluate global model
+Averaged Train Loss: 2.1936
+Averaged Test Accurancy: 0.2167
+Averaged Test AUC: 0.6485
+Std Test Accurancy: 0.1941
+Std Test AUC: 0.1834
+Logging
+Traceback (most recent call last):
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 532, in <module>
+    run(args)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 332, in run
+    server.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/server_test.py", line 42, in train
+    client.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/clients/client_test.py", line 44, in train
+    loss.backward()
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/_tensor.py", line 492, in backward
+    torch.autograd.backward(
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/autograd/__init__.py", line 251, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

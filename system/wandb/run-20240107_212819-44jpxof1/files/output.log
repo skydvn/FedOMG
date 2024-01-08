@@ -1,0 +1,85 @@
+Join ratio / total clients: 1.0 / 100
+Finished creating server and clients.
+-------------Round number: 0-------------
+Evaluate global model
+Averaged Train Loss: 2.3011
+Averaged Test Accurancy: 0.1118
+Averaged Test AUC: 0.5095
+Std Test Accurancy: 0.2157
+Std Test AUC: 0.2546
+------------------------- time cost ------------------------- 17.589913845062256
+-------------Round number: 1-------------
+Evaluate global model
+Averaged Train Loss: 2.1267
+Averaged Test Accurancy: 0.2537
+Averaged Test AUC: 0.6856
+Std Test Accurancy: 0.1943
+Std Test AUC: 0.1938
+------------------------- time cost ------------------------- 17.536133766174316
+-------------Round number: 2-------------
+Evaluate global model
+Averaged Train Loss: 2.1416
+Averaged Test Accurancy: 0.2739
+Averaged Test AUC: 0.6736
+Std Test Accurancy: 0.1765
+Std Test AUC: 0.2040
+------------------------- time cost ------------------------- 17.34003496170044
+-------------Round number: 3-------------
+Evaluate global model
+Averaged Train Loss: 2.1490
+Averaged Test Accurancy: 0.2815
+Averaged Test AUC: 0.6671
+Std Test Accurancy: 0.1545
+Std Test AUC: 0.1943
+------------------------- time cost ------------------------- 18.384837865829468
+-------------Round number: 4-------------
+Evaluate global model
+Averaged Train Loss: 2.1534
+Averaged Test Accurancy: 0.2696
+Averaged Test AUC: 0.6615
+Std Test Accurancy: 0.1410
+Std Test AUC: 0.1785
+Traceback (most recent call last):
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 532, in <module>
+    run(args)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 332, in run
+    server.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/server_test.py", line 42, in train
+    client.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/clients/client_test.py", line 41, in train
+    output = self.model(x)
+             ^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/trainmodel/resnet.py", line 262, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/trainmodel/resnet.py", line 254, in _forward_impl
+    x = layer(x)
+        ^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/trainmodel/resnet.py", line 62, in forward
+    out = self.bn3(out)
+          ^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 171, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/functional.py", line 2478, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

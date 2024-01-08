@@ -23,6 +23,7 @@ class Client(object):
         self.device = args.device
         self.id = id  # integer
         self.save_folder_name = args.save_folder_name
+        self.num_clients = args.num_clients
 
         self.num_classes = args.num_classes
         self.train_samples = train_samples
@@ -53,17 +54,22 @@ class Client(object):
             gamma=args.learning_rate_decay_gamma
         )
         self.learning_rate_decay = args.learning_rate_decay
+        self.args = args
 
     def load_train_data(self, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        train_data = read_client_data(self.dataset, self.id, is_train=True)
+        train_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
+                                      self.args.alpha_dirich,
+                                      is_train=True, num_clients=self.num_clients)
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
     def load_test_data(self, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        test_data = read_client_data(self.dataset, self.id, is_train=False)
+        test_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
+                                     self.args.alpha_dirich,
+                                     is_train=False, num_clients=self.num_clients)
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
         
     def set_parameters(self, model):

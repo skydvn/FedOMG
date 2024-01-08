@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 532, in <module>
+    run(args)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 191, in run
+    server = FedTest(args, i)
+             ^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/server_test.py", line 16, in __init__
+    self.set_clients(client_test)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/serverbase.py", line 103, in set_clients
+    train_data = read_client_data(self.dataset, i, self.args.noniid, self.args.balance, self.args.alpha_dirich,
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/utils/data_utils.py", line 39, in read_client_data
+    train_data = read_data(dataset, idx, niid, balance, alpha, is_train, num_clients)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/utils/data_utils.py", line 14, in read_data
+    with open(train_file, 'rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/duong/data/Cifar10/100/False_False_0.1/train/0.npz'

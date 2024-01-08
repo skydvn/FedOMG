@@ -1,0 +1,22 @@
+Join ratio / total clients: 1.0 / 100
+Finished creating server and clients.
+-------------Round number: 0-------------
+Evaluate global model
+Traceback (most recent call last):
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 532, in <module>
+    run(args)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 332, in run
+    server.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/server_test.py", line 39, in train
+    self.evaluate()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/serverbase.py", line 368, in evaluate
+    self.writer.add_scalar("charts/test_acc_std", test_acc_std, self.current_round)
+                                                  ^^^^^^^^^^^^
+NameError: name 'test_acc_std' is not defined
+sum 2 1681.0
+sum 1 15032
+Averaged Train Loss: 2.3011
+Averaged Test Accurancy: 0.1118
+Averaged Test AUC: 0.5095
+Std Test Accurancy: 0.2157
+Std Test AUC: 0.2546

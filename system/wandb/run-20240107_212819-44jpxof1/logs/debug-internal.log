@@ -1,0 +1,211 @@
+2024-01-07 21:28:19,418 INFO    StreamThr :19849 [internal.py:wandb_internal():86] W&B internal server running at pid: 19849, started at: 2024-01-07 21:28:19.418088
+2024-01-07 21:28:19,419 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status
+2024-01-07 21:28:19,420 INFO    WriterThread:19849 [datastore.py:open_for_write():85] open: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/run-44jpxof1.wandb
+2024-01-07 21:28:19,420 DEBUG   SenderThread:19849 [sender.py:send():380] send: header
+2024-01-07 21:28:19,423 DEBUG   SenderThread:19849 [sender.py:send():380] send: run
+2024-01-07 21:28:20,438 INFO    SenderThread:19849 [dir_watcher.py:__init__():211] watching files in: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files
+2024-01-07 21:28:20,438 INFO    SenderThread:19849 [sender.py:_start_run_threads():1124] run started: 44jpxof1 with start time 1704637699.417811
+2024-01-07 21:28:20,439 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: check_version
+2024-01-07 21:28:20,440 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: check_version
+2024-01-07 21:28:20,591 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: run_start
+2024-01-07 21:28:20,595 DEBUG   HandlerThread:19849 [system_info.py:__init__():32] System info init
+2024-01-07 21:28:20,595 DEBUG   HandlerThread:19849 [system_info.py:__init__():47] System info init done
+2024-01-07 21:28:20,595 INFO    HandlerThread:19849 [system_monitor.py:start():194] Starting system monitor
+2024-01-07 21:28:20,595 INFO    SystemMonitor:19849 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-01-07 21:28:20,596 INFO    HandlerThread:19849 [system_monitor.py:probe():214] Collecting system info
+2024-01-07 21:28:20,596 INFO    SystemMonitor:19849 [interfaces.py:start():190] Started cpu monitoring
+2024-01-07 21:28:20,596 INFO    SystemMonitor:19849 [interfaces.py:start():190] Started disk monitoring
+2024-01-07 21:28:20,597 INFO    SystemMonitor:19849 [interfaces.py:start():190] Started gpu monitoring
+2024-01-07 21:28:20,597 INFO    SystemMonitor:19849 [interfaces.py:start():190] Started memory monitoring
+2024-01-07 21:28:20,598 INFO    SystemMonitor:19849 [interfaces.py:start():190] Started network monitoring
+2024-01-07 21:28:20,607 DEBUG   HandlerThread:19849 [system_info.py:probe():196] Probing system
+2024-01-07 21:28:20,608 DEBUG   HandlerThread:19849 [system_info.py:_probe_git():181] Probing git
+2024-01-07 21:28:20,610 DEBUG   HandlerThread:19849 [system_info.py:_probe_git():189] Probing git done
+2024-01-07 21:28:20,610 DEBUG   HandlerThread:19849 [system_info.py:probe():244] Probing system done
+2024-01-07 21:28:20,610 DEBUG   HandlerThread:19849 [system_monitor.py:probe():223] {'os': 'Linux-6.2.0-39-generic-x86_64-with-glibc2.35', 'python': '3.11.5', 'heartbeatAt': '2024-01-07T14:28:20.607454', 'startedAt': '2024-01-07T14:28:19.414996', 'docker': None, 'cuda': None, 'args': ('-log', '-data', 'cifar10', '-gr', '200', '-algo', 'FedTest', '-m', 'resnet8', '-mstr', 'resnet8', '-nc', '100', '-ls', '5', '-car', '100', '-calr', '25', '-mmt', '0.5', '-ss', '30', '-gam', '0.9', '-lbs', '32', '--noniid', '--balance', '--alpha_dirich', '0.1'), 'state': 'running', 'program': '/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py', 'codePathLocal': 'main.py', 'codePath': 'system/main.py', 'git': {'remote': 'https://github.com/BINH2702/pFL-CAG.git', 'commit': 'c221f8052e6b4255ff5d6c562c6a1c842190f745'}, 'email': 'mduongbkhn@gmail.com', 'root': '/home/duong/Documents/git/FederatedLearning/pFL-CAG', 'host': 'skydvn', 'username': 'duong', 'executable': '/home/duong/Documents/git/.env/bin/python', 'cpu_count': 24, 'cpu_count_logical': 32, 'cpu_freq': {'current': 2552.34184375, 'min': 800.0, 'max': 4575.0}, 'cpu_freq_per_core': [{'current': 4837.699, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 5093.493, 'min': 800.0, 'max': 5200.0}, {'current': 4833.483, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 4533.647, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 800.259, 'min': 800.0, 'max': 5400.0}, {'current': 2272.727, 'min': 800.0, 'max': 5400.0}, {'current': 2400.0, 'min': 800.0, 'max': 5400.0}, {'current': 5141.382, 'min': 800.0, 'max': 5400.0}, {'current': 3520.339, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 4700.983, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 5200.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 799.82, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}, {'current': 3533.81, 'min': 800.0, 'max': 3900.0}, {'current': 2400.0, 'min': 800.0, 'max': 3900.0}], 'disk': {'/': {'total': 937.3305015563965, 'used': 250.01755142211914}}, 'gpu': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'memory_total': 8585740288}], 'memory': {'total': 15.349987030029297}}
+2024-01-07 21:28:20,610 INFO    HandlerThread:19849 [system_monitor.py:probe():224] Finished collecting system info
+2024-01-07 21:28:20,610 INFO    HandlerThread:19849 [system_monitor.py:probe():227] Publishing system info
+2024-01-07 21:28:20,610 DEBUG   HandlerThread:19849 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2024-01-07 21:28:20,610 DEBUG   HandlerThread:19849 [system_info.py:_save_pip():68] Saving pip packages done
+2024-01-07 21:28:20,610 INFO    HandlerThread:19849 [system_monitor.py:probe():229] Finished publishing system info
+2024-01-07 21:28:20,612 DEBUG   SenderThread:19849 [sender.py:send():380] send: files
+2024-01-07 21:28:20,612 INFO    SenderThread:19849 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2024-01-07 21:28:20,614 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:28:20,614 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:28:20,657 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:28:21,003 DEBUG   SenderThread:19849 [sender.py:send():380] send: telemetry
+2024-01-07 21:28:21,438 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_created():271] file/dir created: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/requirements.txt
+2024-01-07 21:28:21,439 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_created():271] file/dir created: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/wandb-metadata.json
+2024-01-07 21:28:21,969 INFO    wandb-upload_0:19849 [upload_job.py:push():131] Uploaded file /tmp/tmptiselii1wandb/pppruf13-wandb-metadata.json
+2024-01-07 21:28:23,439 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_created():271] file/dir created: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:28:25,149 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:25,439 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:28:26,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:26,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:26,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:26,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:26,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:29,440 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:28:30,747 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:35,614 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:28:35,614 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:28:35,615 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:28:36,306 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:41,733 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:43,445 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:28:43,896 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:43,896 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:43,896 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:43,897 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:43,897 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:28:45,445 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:28:46,897 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:50,614 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:28:50,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:28:50,615 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:28:52,168 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:53,447 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/config.yaml
+2024-01-07 21:28:58,208 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:28:59,449 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:01,558 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:01,558 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:01,558 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:01,558 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:01,558 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:03,450 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:03,559 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:05,614 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:29:05,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:29:05,615 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:29:09,002 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:14,003 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:17,454 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:18,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:18,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:18,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:18,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:18,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:19,777 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:20,598 DEBUG   SystemMonitor:19849 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-01-07 21:29:20,599 DEBUG   SenderThread:19849 [sender.py:send():380] send: stats
+2024-01-07 21:29:20,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:29:20,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:29:20,615 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:29:21,455 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:25,180 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:30,181 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:35,458 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:35,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: stop_status
+2024-01-07 21:29:35,615 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: internal_messages
+2024-01-07 21:29:35,615 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: stop_status
+2024-01-07 21:29:37,235 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:37,429 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:37,429 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:37,429 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:37,429 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:37,429 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: partial_history
+2024-01-07 21:29:39,459 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:42,430 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:47,431 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:47,901 DEBUG   SenderThread:19849 [sender.py:send():380] send: exit
+2024-01-07 21:29:47,901 INFO    SenderThread:19849 [sender.py:send_exit():585] handling exit code: 255
+2024-01-07 21:29:47,901 INFO    SenderThread:19849 [sender.py:send_exit():587] handling runtime: 87
+2024-01-07 21:29:47,902 INFO    SenderThread:19849 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2024-01-07 21:29:47,902 INFO    SenderThread:19849 [sender.py:send_exit():593] send defer
+2024-01-07 21:29:47,902 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,902 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 0
+2024-01-07 21:29:47,902 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,902 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 0
+2024-01-07 21:29:47,902 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 1
+2024-01-07 21:29:47,903 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,903 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 1
+2024-01-07 21:29:47,903 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,903 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 1
+2024-01-07 21:29:47,903 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 2
+2024-01-07 21:29:47,903 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,903 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 2
+2024-01-07 21:29:47,903 INFO    HandlerThread:19849 [system_monitor.py:finish():203] Stopping system monitor
+2024-01-07 21:29:47,903 DEBUG   SystemMonitor:19849 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-01-07 21:29:47,903 DEBUG   SystemMonitor:19849 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-01-07 21:29:47,904 INFO    HandlerThread:19849 [interfaces.py:finish():202] Joined cpu monitor
+2024-01-07 21:29:47,904 INFO    HandlerThread:19849 [interfaces.py:finish():202] Joined disk monitor
+2024-01-07 21:29:47,927 INFO    HandlerThread:19849 [interfaces.py:finish():202] Joined gpu monitor
+2024-01-07 21:29:47,927 INFO    HandlerThread:19849 [interfaces.py:finish():202] Joined memory monitor
+2024-01-07 21:29:47,927 INFO    HandlerThread:19849 [interfaces.py:finish():202] Joined network monitor
+2024-01-07 21:29:47,928 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,928 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 2
+2024-01-07 21:29:47,928 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 3
+2024-01-07 21:29:47,928 DEBUG   SenderThread:19849 [sender.py:send():380] send: stats
+2024-01-07 21:29:47,928 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,928 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 3
+2024-01-07 21:29:47,929 DEBUG   SenderThread:19849 [sender.py:send():380] send: history
+2024-01-07 21:29:47,929 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: summary_record
+2024-01-07 21:29:47,929 INFO    SenderThread:19849 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2024-01-07 21:29:47,929 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,929 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 3
+2024-01-07 21:29:47,929 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 4
+2024-01-07 21:29:47,929 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,929 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 4
+2024-01-07 21:29:47,930 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,930 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 4
+2024-01-07 21:29:47,930 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 5
+2024-01-07 21:29:47,930 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,930 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 5
+2024-01-07 21:29:47,930 DEBUG   SenderThread:19849 [sender.py:send():380] send: summary
+2024-01-07 21:29:47,930 INFO    SenderThread:19849 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2024-01-07 21:29:47,931 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,931 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 5
+2024-01-07 21:29:47,931 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 6
+2024-01-07 21:29:47,931 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,931 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 6
+2024-01-07 21:29:47,931 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,931 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 6
+2024-01-07 21:29:47,931 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 7
+2024-01-07 21:29:47,931 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: status_report
+2024-01-07 21:29:47,931 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:47,931 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 7
+2024-01-07 21:29:47,931 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:47,931 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 7
+2024-01-07 21:29:48,461 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_created():271] file/dir created: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/wandb-summary.json
+2024-01-07 21:29:48,901 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: poll_exit
+2024-01-07 21:29:49,902 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 8
+2024-01-07 21:29:49,902 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: poll_exit
+2024-01-07 21:29:49,903 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:49,903 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 8
+2024-01-07 21:29:49,903 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: defer
+2024-01-07 21:29:49,903 INFO    SenderThread:19849 [sender.py:send_request_defer():609] handle sender defer: 8
+2024-01-07 21:29:49,903 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: poll_exit
+2024-01-07 21:29:49,904 INFO    SenderThread:19849 [job_builder.py:build():298] Attempting to build job artifact
+2024-01-07 21:29:49,904 INFO    SenderThread:19849 [job_builder.py:_get_source_type():428] is repo sourced job
+2024-01-07 21:29:49,911 INFO    SenderThread:19849 [job_builder.py:build():404] adding wandb-job metadata file
+2024-01-07 21:29:49,918 INFO    SenderThread:19849 [sender.py:transition_state():613] send defer: 9
+2024-01-07 21:29:49,918 DEBUG   SenderThread:19849 [sender.py:send_request():407] send_request: poll_exit
+2024-01-07 21:29:49,918 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: defer
+2024-01-07 21:29:49,918 INFO    HandlerThread:19849 [handler.py:handle_request_defer():172] handle defer: 9
+2024-01-07 21:29:49,918 DEBUG   SenderThread:19849 [sender.py:send():380] send: artifact
+2024-01-07 21:29:50,462 INFO    Thread-12 :19849 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:29:50,904 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: poll_exit
+2024-01-07 21:29:52,522 INFO    wandb-upload_0:19849 [upload_job.py:push():86] Skipped uploading /home/duong/.local/share/wandb/artifacts/staging/tmphje17lw9
+2024-01-07 21:29:55,170 INFO    wandb-upload_1:19849 [upload_job.py:push():89] Uploaded file /home/duong/.local/share/wandb/artifacts/staging/tmp437a5jgh
+2024-01-07 21:29:55,906 DEBUG   HandlerThread:19849 [handler.py:handle_request():146] handle_request: keepalive
+2024-01-07 21:29:56,434 WARNING StreamThr :19849 [internal.py:is_dead():414] Internal process exiting, parent pid 19770 disappeared
+2024-01-07 21:29:56,435 ERROR   StreamThr :19849 [internal.py:wandb_internal():152] Internal process shutdown.
+2024-01-07 21:29:56,906 INFO    WriterThread:19849 [datastore.py:close():294] close: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/run-44jpxof1.wandb
+2024-01-07 21:29:56,906 INFO    HandlerThread:19849 [handler.py:finish():866] shutting down handler
+2024-01-07 21:29:57,586 INFO    SenderThread:19849 [sender.py:send_artifact():1458] sent artifact job-https___github.com_BINH2702_pFL-CAG.git_system_main.py - {'id': 'QXJ0aWZhY3Q6Njg0MjQ0NzA4', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjEyODE0ODk3Ng==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6Njg0MjQzMjI4', 'versionIndex': 2}}}
+2024-01-07 21:29:57,586 INFO    SenderThread:19849 [sender.py:finish():1536] shutting down sender
+2024-01-07 21:29:57,587 INFO    SenderThread:19849 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-01-07 21:29:58,464 INFO    SenderThread:19849 [dir_watcher.py:finish():388] scan: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files
+2024-01-07 21:29:58,464 INFO    SenderThread:19849 [dir_watcher.py:finish():402] scan save: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/wandb-summary.json wandb-summary.json
+2024-01-07 21:29:58,464 INFO    SenderThread:19849 [dir_watcher.py:finish():402] scan save: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/wandb-metadata.json wandb-metadata.json
+2024-01-07 21:29:58,464 INFO    SenderThread:19849 [dir_watcher.py:finish():402] scan save: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/requirements.txt requirements.txt
+2024-01-07 21:29:58,465 INFO    SenderThread:19849 [dir_watcher.py:finish():402] scan save: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log output.log
+2024-01-07 21:29:58,465 INFO    SenderThread:19849 [dir_watcher.py:finish():402] scan save: /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/config.yaml config.yaml
+2024-01-07 21:29:58,467 INFO    SenderThread:19849 [file_pusher.py:finish():175] shutting down file pusher
+2024-01-07 21:29:58,467 INFO    SenderThread:19849 [file_pusher.py:join():181] waiting for file pusher
+2024-01-07 21:29:59,052 INFO    wandb-upload_2:19849 [upload_job.py:push():131] Uploaded file /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/wandb-summary.json
+2024-01-07 21:29:59,294 INFO    wandb-upload_0:19849 [upload_job.py:push():131] Uploaded file /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/requirements.txt
+2024-01-07 21:29:59,772 INFO    wandb-upload_3:19849 [upload_job.py:push():131] Uploaded file /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/config.yaml
+2024-01-07 21:29:59,774 INFO    wandb-upload_1:19849 [upload_job.py:push():131] Uploaded file /home/duong/Documents/git/FederatedLearning/pFL-CAG/system/wandb/run-20240107_212819-44jpxof1/files/output.log
+2024-01-07 21:30:00,468 INFO    SenderThread:19849 [file_stream.py:finish():595] file stream finish called
+2024-01-07 21:30:00,786 INFO    SenderThread:19849 [file_stream.py:finish():599] file stream finish is done

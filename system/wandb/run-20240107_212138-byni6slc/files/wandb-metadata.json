@@ -1,0 +1,230 @@
+{
+    "os": "Linux-6.2.0-39-generic-x86_64-with-glibc2.35",
+    "python": "3.11.5",
+    "heartbeatAt": "2024-01-07T14:21:40.216262",
+    "startedAt": "2024-01-07T14:21:38.512083",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "-log",
+        "-data",
+        "Cifar10",
+        "-gr",
+        "200",
+        "-algo",
+        "FedTest",
+        "-nc",
+        "100",
+        "-ls",
+        "5",
+        "-car",
+        "100",
+        "-calr",
+        "25",
+        "-mmt",
+        "0.5",
+        "-ss",
+        "30",
+        "-gam",
+        "0.9"
+    ],
+    "state": "running",
+    "program": "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py",
+    "codePathLocal": "main.py",
+    "codePath": "system/main.py",
+    "git": {
+        "remote": "https://github.com/BINH2702/pFL-CAG.git",
+        "commit": "c221f8052e6b4255ff5d6c562c6a1c842190f745"
+    },
+    "email": "mduongbkhn@gmail.com",
+    "root": "/home/duong/Documents/git/FederatedLearning/pFL-CAG",
+    "host": "skydvn",
+    "username": "duong",
+    "executable": "/home/duong/Documents/git/.env/bin/python",
+    "cpu_count": 24,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 2558.17390625,
+        "min": 800.0,
+        "max": 4575.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2418.865,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 4563.747,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 4134.975,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 5082.351,
+            "min": 800.0,
+            "max": 5400.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5400.0
+        },
+        {
+            "current": 4935.325,
+            "min": 800.0,
+            "max": 5400.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5400.0
+        },
+        {
+            "current": 4155.973,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 4358.593,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 1457.812,
+            "min": 800.0,
+            "max": 5200.0
+        },
+        {
+            "current": 1975.211,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1649.165,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1198.484,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2307.549,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        },
+        {
+            "current": 2400.0,
+            "min": 800.0,
+            "max": 3900.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 937.3305015563965,
+            "used": 250.01652145385742
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+            "memory_total": 8585740288
+        }
+    ],
+    "memory": {
+        "total": 15.349987030029297
+    }
+}

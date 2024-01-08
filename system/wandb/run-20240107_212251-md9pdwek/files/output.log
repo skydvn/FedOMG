@@ -1,0 +1,35 @@
+Join ratio / total clients: 1.0 / 100
+Finished creating server and clients.
+-------------Round number: 0-------------
+Evaluate global model
+Traceback (most recent call last):
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 532, in <module>
+    run(args)
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/main.py", line 332, in run
+    server.train()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/server_test.py", line 39, in train
+    self.evaluate()
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/serverbase.py", line 328, in evaluate
+    stats = self.test_metrics()
+            ^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/servers/serverbase.py", line 298, in test_metrics
+    ct, ns, auc = c.test_metrics()
+                  ^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/clients/clientbase.py", line 109, in test_metrics
+    output = self.model(x)
+             ^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/trainmodel/resnet.py", line 262, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/duong/Documents/git/FederatedLearning/pFL-CAG/system/flcore/trainmodel/resnet.py", line 256, in _forward_impl
+    x = self.avgpool(x)
+        ^^^^^^^^^^^^
+  File "/home/duong/Documents/git/.env/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1682, in __getattr__
+    def __getattr__(self, name: str) -> Any:
+KeyboardInterrupt
