@@ -7,7 +7,7 @@ from flcore.clients.clientbase import Client
 from utils.privacy import *
 
 
-class client_test(Client):
+class client_OMG(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 

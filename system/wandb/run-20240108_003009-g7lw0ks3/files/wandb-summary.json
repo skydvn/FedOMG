@@ -1,1 +1,0 @@
-{"_wandb": {"runtime": 3454}, "charts/train_loss": 2.31325820425854, "_timestamp": 1704652050.2729917, "charts/test_acc": 0.22478712080894092, "charts/test_auc": 0.6580197636199826, "charts/test_acc_std": 0.13169684189652225, "charts/test_auc_std": 0.1342875422033936, "_runtime": 3441.09711766243, "_step": 0}

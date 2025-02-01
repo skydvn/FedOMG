@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from sklearn.preprocessing import label_binarize
 from sklearn import metrics
-from utils.data_utils import read_client_data
+from utils.data_utils import read_client_data, client_test_data
 
 
 class Client(object):
@@ -56,22 +56,52 @@ class Client(object):
         self.learning_rate_decay = args.learning_rate_decay
         self.args = args
 
+    '''
+    this for domain code
+    '''
+    # def load_train_data(self, batch_size=None):
+    #     if batch_size == None:
+    #         batch_size = self.batch_size
+    #     # train_data = read_client_data(self.dataset, self.id, is_train=True)
+    #     train_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
+    #                                   self.args.alpha_dirich,
+    #                                   is_train=True, num_clients=self.num_clients)
+    #     return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
+
+    # def load_test_data(self, batch_size=None):
+    #     if batch_size == None:
+    #         batch_size = self.batch_size
+    #     # test_data = read_client_data(self.dataset, self.id, is_train=False)
+    #     test_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
+    #                                  self.args.alpha_dirich,
+    #                                  is_train=False, num_clients=self.num_clients)
+    #     return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
+    
     def load_train_data(self, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        train_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
-                                      self.args.alpha_dirich,
-                                      is_train=True, num_clients=self.num_clients)
+        train_data = read_client_data(self.dataset, self.id, is_train=True)
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
     def load_test_data(self, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        test_data = read_client_data(self.dataset, self.id, self.args.noniid, self.args.balance,
-                                     self.args.alpha_dirich,
-                                     is_train=False, num_clients=self.num_clients)
+        test_data = read_client_data(self.dataset, self.id, is_train=False)
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
-        
+
+    def load_full_test_data(self, batch_size=None):
+        if batch_size == None:
+            batch_size = self.batch_size
+        test_data = client_test_data(self.dataset)
+        return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
+    '''
+    This for domain code
+    '''    
+    def client_model_parameter(self):
+        # for param in self.model.parameters():
+            # print(param)
+        pass
+            
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
             old_param.data = new_param.data.clone()
@@ -87,6 +117,55 @@ class Client(object):
 
     def test_metrics(self):
         testloaderfull = self.load_test_data()
+        # self.model = self.load_model('model')
+        # self.model.to(self.device)
+        self.model.eval()
+        # for name, param in self.model.named_parameters():
+        #     # print(f"name: {name}")
+        #     print(f"param for result: {param}")
+
+        test_acc = 0
+        test_num = 0
+        y_prob = []
+        y_true = []
+        
+        with torch.no_grad():
+            for x, y in testloaderfull:
+                if type(x) == type([]):
+                    x[0] = x[0].to(self.device)
+                else:
+                    x = x.to(self.device)
+                y = y.to(self.device)
+                output = self.model(x)
+
+                test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
+                test_num += y.shape[0]
+
+                y_prob.append(output.detach().cpu().numpy())
+                nc = self.num_classes
+                if self.num_classes == 2:
+                    nc += 1
+                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
+                if self.num_classes == 2:
+                    lb = lb[:, :2]
+                y_true.append(lb)
+
+        # self.model.cpu()
+        # self.save_model(self.model, 'model')
+
+        y_prob = np.concatenate(y_prob, axis=0)
+        y_true = np.concatenate(y_true, axis=0)
+
+        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
+
+        # print(f"test_acc: {test_acc}")
+        # print(f"test_num: {test_num}")
+        # print(f"auc: {auc}")
+
+        return test_acc, test_num, auc
+    
+    def test_full_metrics(self):
+        testloaderfull = self.load_full_test_data()
         # self.model = self.load_model('model')
         # self.model.to(self.device)
         self.model.eval()

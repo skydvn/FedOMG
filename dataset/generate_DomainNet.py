@@ -104,7 +104,8 @@ def generate_DomainNet(dir_path):
         os.makedirs(root)
         for d, u in zip(domains, urls):
             os.system(f'wget {u} -P {root}')
-            os.system(f'unzip {root}/{d}.zip -d {root}')
+            # os.system(f'unzip {root}/{d}.zip -d {root}')
+            os.system(f'tar -xf {root}/{d}.zip -C {root}')
             os.system(f'wget {http_head}domainnet/txt/{d}_train.txt -P {root}/splits')
             os.system(f'wget {http_head}domainnet/txt/{d}_test.txt -P {root}/splits')
 
@@ -120,6 +121,7 @@ def generate_DomainNet(dir_path):
         dataset_image = []
         dataset_label = []
 
+        # Mix all into 1
         dataset_image.extend(train_data.cpu().detach().numpy())
         dataset_image.extend(test_data.cpu().detach().numpy())
         dataset_label.extend(train_label.cpu().detach().numpy())
@@ -140,10 +142,12 @@ def generate_DomainNet(dir_path):
         for i in np.unique(y[client]):
             statistic[client].append((int(i), int(sum(y[client]==i))))
 
-
+    """
+    Code working until this point
+    """
     train_data, test_data = split_data(X, y)
     # modify the code in YOUR_ENV/lib/python3.8/site-packages/numpy/lib Line #678 from protocol=3 to protocol=4
-    save_file(config_path, train_path, test_path, train_data, test_data, num_clients, max(labelss), 
+    save_file(config_path, train_path, test_path, train_data, test_data, num_clients, max(labelss),
         statistic, None, None, None)
 
 

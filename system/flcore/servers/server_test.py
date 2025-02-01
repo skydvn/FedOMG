@@ -1,42 +1,50 @@
 import copy
 import time
-from flcore.clients.client_test import client_test
+from flcore.clients.client_test import client_CAG
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
 import torch
 from torch.optim.lr_scheduler import StepLR
+import statistics
 
-class FedTest(Server):
+class FedOMG(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
         # select slow clients
         self.set_slow_clients()
-        self.set_clients(client_test)
+        self.set_clients(client_CAG)
+        self.set_new_clients(client_CAG)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
 
         self.Budget = []
         self.update_grads = None
-        self.cagrad_c = 0.5
+        self.cagrad_c = args.c_parameter
         self.cagrad_rounds = args.cagrad_rounds
         self.cagrad_learning_rate = args.cagrad_learning_rate
         self.momentum = args.momentum
         self.step_size = args.step_size
         self.gamma = args.gamma
+        self.device = args.device
+        model_origin = copy.deepcopy(args.model)
+
 
     def train(self):
         for i in range(self.global_rounds+1):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
+            self.set_new_client_domain()
 
             if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
+                if self.args.domain_training:
+                    self.domain_evaluate()
 
             for client in self.selected_clients:
                 client.train()
@@ -52,9 +60,21 @@ class FedTest(Server):
 
             g = self.cagrad(grads, self.num_clients)
 
+            model_origin = copy.deepcopy(self.global_model)
             self.overwrite_grad2(self.global_model, g)
             for param in self.global_model.parameters():
                 param.data += param.grad
+
+            angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
+            self.angle_value = statistics.mean(angle)
+
+            angle_value = []
+            for i in self.grads:
+                for j in self.grads:
+                    angle_value = [self.cosine_similarity(i, j)]
+
+            self.grads_angle_value = statistics.mean(angle_value)
+
 
             # if self.dlg_eval and i % self.dlg_gap == 0:
             #     self.call_dlg(i)
@@ -74,9 +94,16 @@ class FedTest(Server):
         self.save_results()
         self.save_global_model()
 
-    def cagrad(self, grad_vec, num_tasks):
+        # if self.num_new_clients > 0:
+        #     self.eval_new_clients = True
+        #     self.set_new_clients(client_CAG)
+        #     print(f"\n-------------Fine tuning round-------------")
+        #     print("\nEvaluate new clients")
+        #     self.evaluate()
 
-        grads = grad_vec.cuda()
+    def cagrad(self, grad_vec, num_tasks):
+        
+        grads = grad_vec.to(self.device)
 
         GG = grads.t().mm(grads)
         # to(device)
@@ -85,7 +112,8 @@ class FedTest(Server):
         Gg = GG.mean(1, keepdims=True)
         gg = Gg.mean(0, keepdims=True)
 
-        w = torch.zeros(num_tasks, 1, requires_grad=True, device='cuda')
+        w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
+#         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
 
         if num_tasks == 50:
             w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate*2, momentum=self.momentum)

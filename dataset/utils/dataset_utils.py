@@ -4,24 +4,26 @@ import numpy as np
 import gc
 from sklearn.model_selection import train_test_split
 
-batch_size = 32
-train_size = 0.75 # merge original training set and test set, then split it manually. 
-least_samples = batch_size / (1-train_size) # least samples for each client
-alpha = 0.1 # for Dirichlet distribution
+batch_size = 10
+train_size = 0.75  # merge original training set and test set, then split it manually.
+least_samples = batch_size / (1 - train_size)  # least samples for each client
 
-def check(config_path, train_path, test_path, num_clients, num_classes, niid=False, 
-        balance=True, partition=None):
+
+# alpha = 0.1 # for Dirichlet distribution
+
+def check(config_path, train_path, test_path, num_clients, num_classes, alpha, niid=False, balance=True,
+          partition=None):
     # check existing dataset
     if os.path.exists(config_path):
         with open(config_path, 'r') as f:
             config = ujson.load(f)
         if config['num_clients'] == num_clients and \
-            config['num_classes'] == num_classes and \
-            config['non_iid'] == niid and \
-            config['balance'] == balance and \
-            config['partition'] == partition and \
-            config['alpha'] == alpha and \
-            config['batch_size'] == batch_size:
+                config['num_classes'] == num_classes and \
+                config['non_iid'] == niid and \
+                config['balance'] == balance and \
+                config['partition'] == partition and \
+                config['alpha'] == alpha and \
+                config['batch_size'] == batch_size:
             print("\nDataset already generated.\n")
             return True
 
@@ -34,7 +36,9 @@ def check(config_path, train_path, test_path, num_clients, num_classes, niid=Fal
 
     return False
 
-def separate_data(data, num_clients, num_classes, niid=False, balance=False, partition=None, class_per_client=2):
+
+def separate_data(data, num_clients, num_classes, alpha=0.1, niid=False, balance=False, partition=None,
+                  class_per_client=2):
     X = [[] for _ in range(num_clients)]
     y = [[] for _ in range(num_clients)]
     statistic = [[] for _ in range(num_clients)]
@@ -59,23 +63,25 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
             for client in range(num_clients):
                 if class_num_per_client[client] > 0:
                     selected_clients.append(client)
-                selected_clients = selected_clients[:int(np.ceil((num_clients/num_classes)*class_per_client))]
+                selected_clients = selected_clients[:int(num_clients / num_classes * class_per_client)]
 
             num_all_samples = len(idx_for_each_class[i])
             num_selected_clients = len(selected_clients)
             num_per = num_all_samples / num_selected_clients
             if balance:
-                num_samples = [int(num_per) for _ in range(num_selected_clients-1)]
+                num_samples = [int(num_per) for _ in range(num_selected_clients - 1)]
             else:
-                num_samples = np.random.randint(max(num_per/10, least_samples/num_classes), num_per, num_selected_clients-1).tolist()
-            num_samples.append(num_all_samples-sum(num_samples))
+                num_samples = np.random.randint(max(num_per / 10, least_samples / num_classes), num_per,
+                                                num_selected_clients - 1).tolist()
+            num_samples.append(num_all_samples - sum(num_samples))
 
             idx = 0
             for client, num_sample in zip(selected_clients, num_samples):
                 if client not in dataidx_map.keys():
-                    dataidx_map[client] = idx_for_each_class[i][idx:idx+num_sample]
+                    dataidx_map[client] = idx_for_each_class[i][idx:idx + num_sample]
                 else:
-                    dataidx_map[client] = np.append(dataidx_map[client], idx_for_each_class[i][idx:idx+num_sample], axis=0)
+                    dataidx_map[client] = np.append(dataidx_map[client], idx_for_each_class[i][idx:idx + num_sample],
+                                                    axis=0)
                 idx += num_sample
                 class_num_per_client[client] -= 1
 
@@ -91,10 +97,10 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
                 idx_k = np.where(dataset_label == k)[0]
                 np.random.shuffle(idx_k)
                 proportions = np.random.dirichlet(np.repeat(alpha, num_clients))
-                proportions = np.array([p*(len(idx_j)<N/num_clients) for p,idx_j in zip(proportions,idx_batch)])
-                proportions = proportions/proportions.sum()
-                proportions = (np.cumsum(proportions)*len(idx_k)).astype(int)[:-1]
-                idx_batch = [idx_j + idx.tolist() for idx_j,idx in zip(idx_batch,np.split(idx_k,proportions))]
+                proportions = np.array([p * (len(idx_j) < N / num_clients) for p, idx_j in zip(proportions, idx_batch)])
+                proportions = proportions / proportions.sum()
+                proportions = (np.cumsum(proportions) * len(idx_k)).astype(int)[:-1]
+                idx_batch = [idx_j + idx.tolist() for idx_j, idx in zip(idx_batch, np.split(idx_k, proportions))]
                 min_size = min([len(idx_j) for idx_j in idx_batch])
 
         for j in range(num_clients):
@@ -109,8 +115,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
         y[client] = dataset_label[idxs]
 
         for i in np.unique(y[client]):
-            statistic[client].append((int(i), int(sum(y[client]==i))))
-            
+            statistic[client].append((int(i), int(sum(y[client] == i))))
 
     del data
     # gc.collect()
@@ -126,7 +131,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
 def split_data(X, y):
     # Split dataset
     train_data, test_data = [], []
-    num_samples = {'train':[], 'test':[]}
+    num_samples = {'train': [], 'test': []}
 
     for i in range(len(y)):
         X_train, X_test, y_train, y_test = train_test_split(
@@ -146,17 +151,18 @@ def split_data(X, y):
 
     return train_data, test_data
 
-def save_file(config_path, train_path, test_path, train_data, test_data, num_clients, 
-                num_classes, statistic, niid=False, balance=True, partition=None):
+
+def save_file(config_path, train_path, test_path, train_data, test_data, num_clients,
+              num_classes, statistic, alpha, niid=False, balance=True, partition=None):
     config = {
-        'num_clients': num_clients, 
-        'num_classes': num_classes, 
-        'non_iid': niid, 
-        'balance': balance, 
-        'partition': partition, 
-        'Size of samples for labels in clients': statistic, 
-        'alpha': alpha, 
-        'batch_size': batch_size, 
+        'num_clients': num_clients,
+        'num_classes': num_classes,
+        'non_iid': niid,
+        'balance': balance,
+        'partition': partition,
+        'Size of samples for labels in clients': statistic,
+        'alpha': alpha,
+        'batch_size': batch_size,
     }
 
     # gc.collect()

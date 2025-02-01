@@ -1,13 +1,14 @@
 import copy
 import time
-from flcore.clients.clientrod_cag import clientROD
+from flcore.clients.clientrod import clientROD
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
 import torch
 from torch.optim.lr_scheduler import StepLR
+import statistics
 
-class FedROD(Server):
+class FedCAG_ROD(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
@@ -20,12 +21,14 @@ class FedROD(Server):
 
         self.Budget = []
         self.update_grads = None
-        self.cagrad_c = 0.5
+        self.cagrad_c = args.c_parameter
         self.cagrad_rounds = args.cagrad_rounds
         self.cagrad_learning_rate = args.cagrad_learning_rate
         self.momentum = args.momentum
         self.step_size = args.step_size
         self.gamma = args.gamma
+        self.device = args.device
+        model_origin = copy.deepcopy(args.model)
 
     def train(self):
         for i in range(self.global_rounds+1):
@@ -52,10 +55,13 @@ class FedROD(Server):
 
             g = self.cagrad(grads, self.num_clients)
 
+            model_origin = copy.deepcopy(self.global_model)
             self.overwrite_grad2(self.global_model, g)
             for param in self.global_model.parameters():
                 param.data += param.grad
 
+            angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
+            self.angle_value = statistics.mean(angle)
             # if self.dlg_eval and i % self.dlg_gap == 0:
             #     self.call_dlg(i)
             # self.aggregate_parameters()
@@ -74,9 +80,16 @@ class FedROD(Server):
         self.save_results()
         self.save_global_model()
 
+        if self.num_new_clients > 0:
+            self.eval_new_clients = True
+            self.set_new_clients(clientROD)
+            print(f"\n-------------Fine tuning round-------------")
+            print("\nEvaluate new clients")
+            self.evaluate()
+
     def cagrad(self, grad_vec, num_tasks):
 
-        grads = grad_vec.cuda()
+        grads = grad_vec.to(self.device)
 
         GG = grads.t().mm(grads)
         # to(device)
@@ -85,7 +98,7 @@ class FedROD(Server):
         Gg = GG.mean(1, keepdims=True)
         gg = Gg.mean(0, keepdims=True)
 
-        w = torch.zeros(num_tasks, 1, requires_grad=True, device='cuda')
+        w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
 
         if num_tasks == 50:
             w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate*2, momentum=self.momentum)
