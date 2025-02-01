@@ -307,7 +307,7 @@ if __name__ == "__main__":
     # GPFL
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
-    # FedCAGrad
+    # FedOMG
     parser.add_argument('-car', "--cagrad_rounds", type=int, default=100)
     parser.add_argument('-calr', "--cagrad_learning_rate", type=float, default=25)
     parser.add_argument('-mmt', "--momentum", type=float, default=0.5)
