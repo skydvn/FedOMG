@@ -299,7 +299,7 @@ if __name__ == "__main__":
     parser.add_argument('-et', "--eta", type=float, default=1.0)
     parser.add_argument('-s', "--rand_percent", type=int, default=80)
     parser.add_argument('-p', "--layer_idx", type=int, default=2,
-                        help="More fine-graind than its original paper.")
+                        help="More fine-grained than its original paper.")
     # FedKD
     parser.add_argument('-mlr', "--mentee_learning_rate", type=float, default=0.005)
     parser.add_argument('-Ts', "--T_start", type=float, default=0.95)
@@ -339,7 +339,7 @@ if __name__ == "__main__":
     print("Client drop rate: {}".format(args.client_drop_rate))
     print("Client select regarding time: {}".format(args.time_select))
     if args.time_select:
-        print("Time threthold: {}".format(args.time_threthold))
+        print("Time thresh hold: {}".format(args.time_threthold))
     print("Running times: {}".format(args.times))
     print("Dataset: {}".format(args.dataset))
     print("Number of classes: {}".format(args.num_classes))
