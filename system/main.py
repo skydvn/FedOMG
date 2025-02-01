@@ -15,7 +15,7 @@ from flcore.servers.serverfomo import FedFomo
 from flcore.servers.serverditto import Ditto
 from flcore.servers.serverbn import FedBN
 from flcore.servers.serverrod import FedROD
-from flcore.servers.serverrod_cag import FedCAG_ROD
+from flcore.servers.serverrod_omg import FedOMG_ROD
 from flcore.servers.serverbabu import FedBABU
 from flcore.servers.serverpac import FedPAC
 from flcore.servers.serverpcl import FedPCL
@@ -308,8 +308,8 @@ if __name__ == "__main__":
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
     # FedOMG
-    parser.add_argument('-car', "--cagrad_rounds", type=int, default=100)
-    parser.add_argument('-calr', "--cagrad_learning_rate", type=float, default=25)
+    parser.add_argument('-car', "--grad_omg_rounds", type=int, default=100)
+    parser.add_argument('-calr', "--grad_omg_learning_rate", type=float, default=25)
     parser.add_argument('-mmt', "--momentum", type=float, default=0.5)
     parser.add_argument('-ss', "--step_size", type=int, default=30)
     parser.add_argument('-gam', "--gamma", type=float, default=0.5)

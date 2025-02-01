@@ -22,9 +22,9 @@ class FedOMG(Server):
 
         self.Budget = []
         self.update_grads = None
-        self.cagrad_c = args.c_parameter
-        self.cagrad_rounds = args.cagrad_rounds
-        self.cagrad_learning_rate = args.cagrad_learning_rate
+        self.grad_omg_c = args.c_parameter
+        self.grad_omg_rounds = args.grad_omg_rounds
+        self.grad_omg_learning_rate = args.grad_omg_learning_rate
         self.momentum = args.momentum
         self.step_size = args.step_size
         self.gamma = args.gamma
@@ -58,7 +58,7 @@ class FedOMG(Server):
             for index, model in enumerate(self.grads):
                 grad2vec2(model, grads, index)
 
-            g = self.cagrad(grads, self.num_clients)
+            g = self.grad_omg(grads, self.num_clients)
 
             model_origin = copy.deepcopy(self.global_model)
             self.overwrite_grad2(self.global_model, g)
@@ -101,7 +101,7 @@ class FedOMG(Server):
         #     print("\nEvaluate new clients")
         #     self.evaluate()
 
-    def cagrad(self, grad_vec, num_tasks):
+    def grad_omg(self, grad_vec, num_tasks):
         
         grads = grad_vec.to(self.device)
 
@@ -116,24 +116,24 @@ class FedOMG(Server):
 #         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
 
         if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate*2, momentum=self.momentum)
+            w_opt = torch.optim.SGD([w], lr=self.grad_omg_learning_rate*2, momentum=self.momentum)
         else:
-            w_opt = torch.optim.SGD([w], lr=self.cagrad_learning_rate, momentum=self.momentum)
+            w_opt = torch.optim.SGD([w], lr=self.grad_omg_learning_rate, momentum=self.momentum)
 
         scheduler = StepLR(w_opt, step_size=self.step_size, gamma=self.gamma)
 
-        c = (gg+1e-4).sqrt() * self.cagrad_c
+        c = (gg+1e-4).sqrt() * self.grad_omg_c
 
         w_best = None
         obj_best = np.inf
-        for i in range(self.cagrad_rounds+1):
+        for i in range(self.grad_omg_rounds+1):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
-            if i < self.cagrad_rounds:
+            if i < self.grad_omg_rounds:
                 obj.backward()
                 w_opt.step()
                 scheduler.step()
@@ -145,7 +145,7 @@ class FedOMG(Server):
 
         lmbda = c.view(-1) / (gw_norm+1e-4)
         g = ((1/num_tasks + ww * lmbda).view(
-            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.cagrad_c**2)
+            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.grad_omg_c**2)
         return g
 
     # def overwrite_grad(self, m, newgrad, grad_dims):
