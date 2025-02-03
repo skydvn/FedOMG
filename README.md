@@ -1,4 +1,4 @@
-# TVLARS - ICLR 2025 - Pytorch Official Implementation
+# Federated Domain Generalization with Data-free On-server Gradient Matching - ICLR 2025 - Pytorch Official Implementation
 
 # Abstract
 <p align="justify">Domain Generalization (DG) aims to learn from multiple known source domains a model that can generalize well to unknown target domains. 
