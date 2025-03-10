@@ -39,8 +39,8 @@ class Server(object):
 
         # self.global_learning_rate_decay = args.global_learning_rate_decay
 
-        self.cagrad_rounds = args.cagrad_rounds
-        self.ca_lr = args.cagrad_learning_rate
+        self.omg_rounds = args.omg_rounds
+        self.omg_learning_rate = args.omg_learning_rate
         self.mmt = args.momentum
         self.ss = args.step_size
         self.gam = args.gamma
