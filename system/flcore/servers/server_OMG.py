@@ -1,6 +1,6 @@
 import copy
 import time
-from flcore.clients.client_test import client_OMG
+from flcore.clients.client_OMG import client_OMG
 from flcore.servers.serverbase import Server
 from threading import Thread
 import numpy as np
