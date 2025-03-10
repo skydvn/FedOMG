@@ -38,9 +38,6 @@ class Server(object):
         self.auto_break = args.auto_break
 
         # self.global_learning_rate_decay = args.global_learning_rate_decay
-
-        self.omg_rounds = args.omg_rounds
-        self.omg_learning_rate = args.omg_learning_rate
         self.mmt = args.momentum
         self.ss = args.step_size
         self.gam = args.gamma
