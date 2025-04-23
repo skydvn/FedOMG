@@ -160,11 +160,11 @@ def run(args):
         elif args.algorithm == "FedBN":
             server = FedBN(args, i)
         #
-        elif args.algorithm == "FedCagRod":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedCAG_ROD(args, i)
+        # elif args.algorithm == "FedCagRod":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedCAG_ROD(args, i)
 
         elif args.algorithm == "FedROD":
             args.head = copy.deepcopy(args.model.fc)
