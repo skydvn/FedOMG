@@ -308,17 +308,14 @@ if __name__ == "__main__":
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
     # FedOMG
-    parser.add_argument('-car', "--grad_omg_rounds", type=int, default=100)
-    parser.add_argument('-calr', "--grad_omg_learning_rate", type=float, default=25)
-    parser.add_argument('-mmt', "--momentum", type=float, default=0.5)
-    parser.add_argument('-ss', "--step_size", type=int, default=30)
-    parser.add_argument('-gam', "--gamma", type=float, default=0.5)
-    parser.add_argument('-c', "--c_parameter", type=float, default=0.5)
-
-    #Domain_generalization
-    parser.add_argument('-rmd', "--remove_domain", type=int, default=3)
-    parser.add_argument('-dg', "--domain_training", action='store_true')
-    parser.add_argument('-tfd',"--test_full_data", action='store_true')
+    parser.add_argument('--omg_rounds', type=int, default=100, help='Number of omg rounds')
+    parser.add_argument('--omg_learning_rate', type=float, default=25, help='omg learning rate')
+    parser.add_argument('--omg_momentum', type=float, default=0.5)
+    parser.add_argument('--omg_step_size', type=int, default=30, help='omg step size')
+    parser.add_argument('--omg_gamma', type=float, default=0.5, help='omg gamma')
+    parser.add_argument('--omg_c', type=float, default=0.25, help='omg c parameter')
+    parser.add_argument('--omg_meta_lr', type=float, default=1.0, help='omg meta learning rate')
+    parser.add_argument('--grad_balance', action='store_true', help='Enable gradient balancing')
 
     args = parser.parse_args()
 
@@ -354,9 +351,6 @@ if __name__ == "__main__":
     if args.device == "cuda":
         print("Cuda device id: {}".format(os.environ["CUDA_VISIBLE_DEVICES"]))
     print("DLG attack: {}".format(args.dlg_eval))
-    if args.domain_training:
-        print("Apply leave one domain out training")
-        print("Remove domain number: {}".format(args.remove_domain))
     if args.dlg_eval:
         print("DLG attack round gap: {}".format(args.dlg_gap))
     print("Total number of new clients: {}".format(args.num_new_clients))

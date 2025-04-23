@@ -6,7 +6,8 @@ from threading import Thread
 import numpy as np
 import torch
 from torch.optim.lr_scheduler import StepLR
-import statistics
+from torch.nn.utils import vector_to_parameters, parameters_to_vector
+from utils.model_utils import ParamDict
 
 class FedOMG(Server):
     def __init__(self, args, times):
@@ -21,15 +22,16 @@ class FedOMG(Server):
         print("Finished creating server and clients.")
 
         self.Budget = []
-        self.update_grads = None
-        self.grad_omg_c = args.c_parameter
-        self.grad_omg_rounds = args.grad_omg_rounds
-        self.grad_omg_learning_rate = args.grad_omg_learning_rate
-        self.momentum = args.momentum
-        self.step_size = args.step_size
-        self.gamma = args.gamma
-        self.device = args.device
-        model_origin = copy.deepcopy(args.model)
+
+        self.omg_learning_rate = args.omg_learning_rate
+        self.omg_step_size = args.omg_step_size
+        self.omg_c = args.omg_c
+        self.omg_rounds = args.omg_rounds
+        self.omg_momentum = args.omg_momentum
+        self.omg_gamma = args.omg_gamma
+
+        self.omg_meta_lr = args.omg_meta_lr
+        self.grad_balance = args.grad_balance
 
 
     def train(self):
@@ -37,14 +39,11 @@ class FedOMG(Server):
             s_t = time.time()
             self.selected_clients = self.select_clients()
             self.send_models()
-            self.set_new_client_domain()
 
             if i % self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
-                if self.args.domain_training:
-                    self.domain_evaluate()
 
             for client in self.selected_clients:
                 client.train()
@@ -52,33 +51,12 @@ class FedOMG(Server):
             self.receive_models()
             self.receive_grads()
 
-            grad_ez = sum(p.numel() for p in self.global_model.parameters())
-            grads = torch.Tensor(grad_ez, self.num_clients)
-
-            for index, model in enumerate(self.grads):
-                grad2vec2(model, grads, index)
-
-            g = self.grad_omg(grads, self.num_clients)
-
-            model_origin = copy.deepcopy(self.global_model)
-            self.overwrite_grad2(self.global_model, g)
-            for param in self.global_model.parameters():
-                param.data += param.grad
-
-            angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
-            self.angle_value = statistics.mean(angle)
-
-            angle_value = []
-            for i in self.grads:
-                for j in self.grads:
-                    angle_value = [self.cosine_similarity(i, j)]
-
-            self.grads_angle_value = statistics.mean(angle_value)
-
-
-            # if self.dlg_eval and i % self.dlg_gap == 0:
-            #     self.call_dlg(i)
-            # self.aggregate_parameters()
+            meta_weights = self.omg_high(
+                meta_weights=self.global_model,
+                inner_weights=self.uploaded_models,
+                lr_meta= self.omg_meta_lr
+            )
+            self.global_model.load_state_dict(copy.deepcopy(meta_weights))
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
@@ -94,12 +72,105 @@ class FedOMG(Server):
         self.save_results()
         self.save_global_model()
 
-        # if self.num_new_clients > 0:
-        #     self.eval_new_clients = True
-        #     self.set_new_clients(client_CAG)
-        #     print(f"\n-------------Fine tuning round-------------")
-        #     print("\nEvaluate new clients")
-        #     self.evaluate()
+
+    def omg_high(self, meta_weights, inner_weights, lr_meta):
+        """
+        Input:
+        - meta_weights: class X(nn.Module)
+        - inner_weights: list[X(nn.Module), X(nn.Module), ..., X(nn.Module)]
+        - lr_meta: scalar value
+
+        Output:
+        - meta_weights: class X(nn.Module)
+
+        """
+        all_domain_grads = []
+        flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
+        for i_domain in range(self.num_clients):
+            domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
+                                 zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
+            domain_grad_vector = torch.cat(domain_grad_diffs)
+            all_domain_grads.append(domain_grad_vector)
+
+        """
+        - Grads normalization.
+        """
+        if self.grad_balance:
+            # Apply balancing
+            # Step 1: Compute norms for each gradient vector
+            domain_grad_norms = [torch.norm(grad) for grad in all_domain_grads]
+
+            # Step 2: Determine scaling factors to balance the norms
+            # Example: Scale all norms to a target value (e.g., the average norm)
+            target_norm = torch.mean(torch.tensor(domain_grad_norms))
+            scaling_factors = [target_norm / norm if norm > 0 else 1.0 for norm in domain_grad_norms]
+
+            # Step 3: Scale gradient vectors
+            balanced_retain_grads = [grad * scale for grad, scale in zip(domain_grad_norms, scaling_factors)]
+
+            # Step 4: Stack the balanced gradients into a tensor
+            all_domains_grad_tensor = torch.stack(balanced_retain_grads).t()
+        else:
+            all_domains_grad_tensor = torch.stack(all_domain_grads).t()
+
+        all_domains_grad_tensor = torch.stack(all_domain_grads).t()
+
+        # print(all_domains_grad_tensor)
+        g = self.omg_low(all_domains_grad_tensor, self.num_clients)
+
+        flatten_meta_weights += g * lr_meta
+
+        vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
+        meta_weights = ParamDict(meta_weights.state_dict())
+
+        return meta_weights
+
+    def omg_low(self, grad_vec, num_tasks):
+
+        grads = grad_vec.to(self.device)
+
+        GG = grads.t().mm(grads)
+        # to(device)
+        scale = (torch.diag(GG) + 1e-4).sqrt().mean()
+        GG = GG / scale.pow(2)
+        Gg = GG.mean(1, keepdims=True)
+        gg = Gg.mean(0, keepdims=True)
+
+        w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
+        #         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
+
+        if num_tasks == 50:
+            w_opt = torch.optim.SGD([w], lr=self.omg_learning_rate * 2, momentum=self.omg_momentum)
+        else:
+            w_opt = torch.optim.SGD([w], lr=self.omg_learning_rate, momentum=self.omg_momentum)
+
+        scheduler = StepLR(w_opt, step_size=self.omg_step_size, gamma=self.omg_gamma)
+
+        c = (gg + 1e-4).sqrt() * self.omg_c
+
+        w_best = None
+        obj_best = np.inf
+        for i in range(self.omg_rounds + 1):
+            w_opt.zero_grad()
+            ww = torch.softmax(w, dim=0)
+            obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
+            if obj.item() < obj_best:
+                obj_best = obj.item()
+                w_best = w.clone()
+            if i < self.omg_rounds:
+                obj.backward(retain_graph=True)
+                w_opt.step()
+                scheduler.step()
+
+                # Check this scheduler. step()
+
+        ww = torch.softmax(w_best, dim=0)
+        gw_norm = (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
+
+        lmbda = c.view(-1) / (gw_norm + 1e-4)
+        g = ((1 / num_tasks + ww * lmbda).view(
+            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.omg_c ** 2)
+        return g
 
     def grad_omg(self, grad_vec, num_tasks):
         
@@ -113,7 +184,6 @@ class FedOMG(Server):
         gg = Gg.mean(0, keepdims=True)
 
         w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
-#         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
 
         if num_tasks == 50:
             w_opt = torch.optim.SGD([w], lr=self.grad_omg_learning_rate*2, momentum=self.momentum)
@@ -148,48 +218,21 @@ class FedOMG(Server):
             -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.grad_omg_c**2)
         return g
 
-    # def overwrite_grad(self, m, newgrad, grad_dims):
-    #     newgrad = newgrad * self.num_clients  # to match the sum loss
-    #     cnt = 0
-    #     for mm in m.shared_modules():
-    #         for param in mm.parameters():
-    #             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
-    #             en = sum(grad_dims[:cnt + 1])
-    #             this_grad = newgrad[beg: en].contiguous().view(param.data.size())
-    #             param.grad = this_grad.data.clone()
-    #             cnt += 1
-
     def overwrite_grad2(self, m, newgrad):
         newgrad = newgrad * self.num_clients
         for param in m.parameters():
-            # Get the number of elements in the current parameter
+
             num_elements = param.numel()
 
-            # Extract a slice of new_params with the same number of elements
             param_slice = newgrad[:num_elements]
 
-            # Reshape the slice to match the shape of the current parameter
             param.grad = param_slice.view(param.data.size())
 
-            # Move to the next slice in new_params
             newgrad = newgrad[num_elements:]
-
-
-# def grad2vec(m, grads, grad_dims, task):
-#     grads[:, task].fill_(0.0)
-#     cnt = 0
-#     for mm in m.shared_modules():
-#         for p in mm.parameters():
-#             grad_cur = p.data.detach().clone()
-#             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
-#             en = sum(grad_dims[:cnt + 1])
-#             grads[beg:en, task].copy_(grad_cur.data.view(-1))
-#             cnt += 1
 
 
 def grad2vec2(m, grads, task):
     grads[:, task].fill_(0.0)
     all_params = torch.cat([param.detach().view(-1) for param in m.parameters()])
-    # print(all_params.size())
     grads[:, task].copy_(all_params)
 
