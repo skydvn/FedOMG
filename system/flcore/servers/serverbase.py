@@ -92,8 +92,8 @@ class Server(object):
             self.save_dir = f"runs/{args.run_name}"
 
             wandb.init(
-                project="FL-DG",
-                entity="scalemind",
+                project="PFLib",
+                entity="trongbinh2702",
                 config=args,
                 name=args.run_name,
                 force=True
@@ -133,8 +133,6 @@ class Server(object):
             self.current_num_join_clients = np.random.choice(range(self.num_join_clients, self.num_clients+1), 1, replace=False)[0]
         else:
             self.current_num_join_clients = self.num_join_clients
-        if self.args.domain_training:
-            self.current_num_join_clients -= 1
         selected_clients = list(np.random.choice(self.clients, self.current_num_join_clients, replace=False))
 
         return selected_clients
@@ -413,10 +411,10 @@ class Server(object):
         test_auc_std = np.std(aucs).item()
         print("Std Test Accurancy: {:.4f}".format(np.std(accs)))
         print("Std Test AUC: {:.4f}".format(np.std(aucs)))
-        print("Mean_Angle_Value_Compare_Global: {:.4f}".format(angle_ug))
-        print("Mean_Angle_Among_Users: {:.4f}".format(angle_uv))
-        print("Mean_Angle_Among_Conflicted_Users: {:.4f}".format(angle_neg_uv))
-        print("Conflicted_Users_Ratio: {:.4f}".format(angle_neg_ratio))
+        # print("Mean_Angle_Value_Compare_Global: {:.4f}".format(angle_ug))
+        # print("Mean_Angle_Among_Users: {:.4f}".format(angle_uv))
+        # print("Mean_Angle_Among_Conflicted_Users: {:.4f}".format(angle_neg_uv))
+        # print("Conflicted_Users_Ratio: {:.4f}".format(angle_neg_ratio))
 
         if self.args.log:
             for i in range(len(self.clients)):
@@ -448,9 +446,6 @@ class Server(object):
 
             # self.writer.add_scalar("charts/neg_user_ratio", angle_neg_ratio, self.current_round)
             wandb.log({"charts/neg_user_ratio": angle_neg_ratio}, step=self.current_round)
-
-            # self.writer.add_scalar("charts/grads_angle_value", grads_angle_value, self.current_round)
-            # wandb.log({"charts/grads_angle_value", grads_angle_value}, step=self.current_round)
 
             self.current_round += 1
 
@@ -522,23 +517,6 @@ class Server(object):
             print('PSNR error')
 
         # self.save_item(items, f'DLG_{R}')
-
-    def set_new_clients(self, clientObj):
-        i = self.remove_domain
-        # for i in range(self.num_clients, self.num_clients + self.num_new_clients):
-        train_data = read_client_data(self.dataset, i, is_train=True)
-        test_data = read_client_data(self.dataset, i, is_train=False)
-        # train_data = read_client_data(self.dataset, i, self.args.noniid, self.args.balance, self.args.alpha_dirich,
-        #                               is_train=True, num_clients=self.num_clients)
-        # test_data = read_client_data(self.dataset, i, self.args.noniid, self.args.balance, self.args.alpha_dirich,
-        #                              is_train=False, num_clients=self.num_clients)
-        client = clientObj(self.args, 
-                        id=i, 
-                        train_samples=len(train_data), 
-                        test_samples=len(test_data), 
-                        train_slow=False, 
-                        send_slow=False)
-        self.new_clients.append(client)
 
     # fine-tuning on new clients
     def fine_tuning_new_clients(self):
