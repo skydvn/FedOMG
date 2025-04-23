@@ -38,9 +38,9 @@ class Server(object):
         self.auto_break = args.auto_break
 
         # self.global_learning_rate_decay = args.global_learning_rate_decay
-        self.mmt = args.momentum
-        self.ss = args.step_size
-        self.gam = args.gamma
+        # self.mmt = args.momentum
+        # self.ss = args.step_size
+        # self.gam = args.gamma
         self.model_str = args.model_str
 
 
@@ -82,7 +82,7 @@ class Server(object):
         self.angle_neg_ratio = 0
 
         self.grads_angle_value = 0
-        self.remove_domain = args.remove_domain
+        
 
         if self.args.log:
             args.run_name = f"{args.algorithm}__{args.dataset}__{args.num_clients}__{int(time.time())}"
@@ -90,11 +90,7 @@ class Server(object):
             self.current_round = 0
             self.domain_current_round = 0
             self.save_dir = f"runs/{args.run_name}"
-            # self.writer = SummaryWriter(self.save_dir)
-            # self.writer.add_text(
-            #     "hyperparameters",
-            #     "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
-            # )
+
             wandb.init(
                 project="FL-DG",
                 entity="scalemind",
@@ -103,27 +99,9 @@ class Server(object):
                 force=True
             )
 
-    # def set_clients(self, clientObj):
-    #     for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
-    #         # train_data = read_client_data(self.dataset, i, is_train=True)
-    #         # test_data = read_client_data(self.dataset, i, is_train=False)
-    #         train_data = read_client_data(self.dataset, i, self.args.noniid, self.args.balance, self.args.alpha_dirich,
-    #                                       is_train=True, num_clients=self.num_clients)
-    #         test_data = read_client_data(self.dataset, i, self.args.noniid, self.args.balance, self.args.alpha_dirich,
-    #                                      is_train=False, num_clients=self.num_clients)
-    #         client = clientObj(self.args,
-    #                         id=i,
-    #                         train_samples=len(train_data),
-    #                         test_samples=len(test_data),
-    #                         train_slow=train_slow,
-    #                         send_slow=send_slow)
-    #         self.clients.append(client)
 
     def set_clients(self, clientObj):
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
-            if self.args.domain_training:
-                if i == self.remove_domain:  # Skip the client with the remove_value index
-                    continue
             train_data = read_client_data(self.dataset, i, is_train=True)
             test_data = read_client_data(self.dataset, i, is_train=False)
             client = clientObj(self.args, 
@@ -241,10 +219,8 @@ class Server(object):
         params1 = [p.data for p in model1.parameters()]
         params2 = [p.data for p in model2.parameters()]
 
-        # Tính hiệu và norm của hiệu giữa các parameter tương ứng
         diff_norms = [torch.norm(p1 - p2, p='fro') for p1, p2 in zip(params1, params2)]
 
-        # Tính tổng (hoặc trung bình) của các norm này để có một đại lượng đơn lẻ mô tả sự khác biệt
         total_diff_norm = torch.sum(torch.stack(diff_norms))
         return total_diff_norm.item()
 
@@ -252,23 +228,10 @@ class Server(object):
         prev_param = torch.cat([p.data.view(-1) for p in prev_model.parameters()])
         params1 = torch.cat([p.data.view(-1) for p in model1.parameters()])
         params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
-        # print(f"prev:{prev_param[0]}")
-        # print(f"p1:{params1[0]}")
-        # print(f"p2:{params2[0]}")
-
         grad1 = params1 - prev_param
         grad2 = params2
-        # print(f"prev:{torch.norm(prev_param)}|p1:{torch.norm(params1)}|p2:{torch.norm(params2)}")
-        # print(f"g1:{torch.norm(grad1)}|g2:{torch.norm(grad2)}")
-        # print(torch.dot(grad1, grad2))
-        # print((torch.norm(grad1) * torch.norm(grad2)))
+
         cos_sim = torch.dot(grad1, grad2) / (torch.norm(grad1) * torch.norm(grad2))
-        # if torch.isnan(cos_sim):
-        #     print("cos_sim is NaN.")
-        #     print("value of params1", params1)
-        #     # print("value of params2", params)
-        #     print("Value of grad1:", grad1)
-        #     print("Value of grad2:", grad2)
         return cos_sim.item()
 
     def cosine_similarity(self, model1, model2):
