@@ -171,51 +171,6 @@ class FedOMG(Server):
             -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.omg_c ** 2)
         return g
 
-    def grad_omg(self, grad_vec, num_tasks):
-        
-        grads = grad_vec.to(self.device)
-
-        GG = grads.t().mm(grads)
-        # to(device)
-        scale = (torch.diag(GG)+1e-4).sqrt().mean()
-        GG = GG / scale.pow(2)
-        Gg = GG.mean(1, keepdims=True)
-        gg = Gg.mean(0, keepdims=True)
-
-        w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
-
-        if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=self.grad_omg_learning_rate*2, momentum=self.momentum)
-        else:
-            w_opt = torch.optim.SGD([w], lr=self.grad_omg_learning_rate, momentum=self.momentum)
-
-        scheduler = StepLR(w_opt, step_size=self.step_size, gamma=self.gamma)
-
-        c = (gg+1e-4).sqrt() * self.grad_omg_c
-
-        w_best = None
-        obj_best = np.inf
-        for i in range(self.grad_omg_rounds+1):
-            w_opt.zero_grad()
-            ww = torch.softmax(w, dim=0)
-            obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
-            if obj.item() < obj_best:
-                obj_best = obj.item()
-                w_best = w.clone()
-            if i < self.grad_omg_rounds:
-                obj.backward()
-                w_opt.step()
-                scheduler.step()
-
-                # Check this scheduler. step()
-
-        ww = torch.softmax(w_best, dim=0)
-        gw_norm = (ww.t().mm(GG).mm(ww)+1e-4).sqrt()
-
-        lmbda = c.view(-1) / (gw_norm+1e-4)
-        g = ((1/num_tasks + ww * lmbda).view(
-            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.grad_omg_c**2)
-        return g
 
     def overwrite_grad2(self, m, newgrad):
         newgrad = newgrad * self.num_clients
@@ -230,8 +185,5 @@ class FedOMG(Server):
             newgrad = newgrad[num_elements:]
 
 
-def grad2vec2(m, grads, task):
-    grads[:, task].fill_(0.0)
-    all_params = torch.cat([param.detach().view(-1) for param in m.parameters()])
-    grads[:, task].copy_(all_params)
+
 

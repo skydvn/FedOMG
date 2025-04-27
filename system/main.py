@@ -308,9 +308,9 @@ if __name__ == "__main__":
     parser.add_argument('-lamr', "--lamda_reg", type=float, default=0.0)
 
     # FedOMG
-    parser.add_argument('-omgr',"--omg_rounds", type=int, default=100, help='Number of omg rounds')
+    parser.add_argument('-omgr',"--omg_rounds", type=int, default=25, help='Number of omg rounds')
     parser.add_argument('-omglr',"--omg_learning_rate", type=float, default=25, help='omg learning rate')
-    parser.add_argument('-mmt',"--omg_momentum", type=float, default=0.5)
+    parser.add_argument('-mmt',"--omg_momentum", type=float, default=0.1)
     parser.add_argument('-ss',"--omg_step_size", type=int, default=30, help='omg step size')
     parser.add_argument('-gam',"--omg_gamma", type=float, default=0.5, help='omg gamma')
     parser.add_argument('--omg_c', type=float, default=0.25, help='omg c parameter')
