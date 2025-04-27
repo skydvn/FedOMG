@@ -18,10 +18,10 @@ python -m venv .env
 ## Running
 For instance, the experiment of FedOMG by the following expressions:
 ```
-python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet8 -mstr resnet8 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 15 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
-python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet8 -mstr resnet8 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 25 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
-python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet8 -mstr resnet8 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 50 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
-python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet8 -mstr resnet8 -nc 100 nb 100 -ls 5 -omgr 100 -omglr 75 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
+python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet18 -mstr resnet18 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 15 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
+python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet18 -mstr resnet18 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 25 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
+python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet18 -mstr resnet18 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 50 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
+python .\system\main.py -data Cifar10 -gr 800 -algo FedOMG -m resnet18 -mstr resnet18 -nc 100 -nb 100 -ls 5 -omgr 100 -omglr 75 -mmt 0.5 -ss 30 -gam 0.5 --noniid --balance --alpha_dirich 0.1
 ```
 
 # Citation
