@@ -226,7 +226,7 @@ if __name__ == "__main__":
     parser.add_argument('-mstr', "--model_str", type=str, default="cnn")
     parser.add_argument('-m', "--model", type=str, default="cnn")
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
-    parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
+    parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.05,
                         help="Local learning rate")
     # parser.add_argument('-gld', "--global_learning_rate_decay", type=bool, default=True)
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)

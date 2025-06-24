@@ -5,6 +5,7 @@ import torch
 # data_path = '/media/mountHDD2/protector/pFL-CAG/dataset/'
 # data_path = '/home/id202388548/experience/dataset/'
 data_path = '../dataset/'
+setting = '100/False_True_0.1/'
 
 """
 This one is for testing
@@ -51,7 +52,7 @@ This one is for testing
         # return test_data
 
 def read_test_data(dataset):
-    test_data_dir = os.path.join(data_path, dataset, 'test/')
+    test_data_dir = os.path.join(data_path, dataset, setting, 'test/')
 
     test_file = test_data_dir + 'test' + '.npz'
     with open(test_file, 'rb') as f:
@@ -70,7 +71,7 @@ def client_test_data(dataset):
 
 def read_data(dataset, idx, is_train=True):
     if is_train:
-        train_data_dir = os.path.join(data_path, dataset, 'train/')
+        train_data_dir = os.path.join(data_path, dataset, setting, 'train/')
 
         train_file = train_data_dir + str(idx) + '.npz'
         with open(train_file, 'rb') as f:
@@ -79,7 +80,7 @@ def read_data(dataset, idx, is_train=True):
         return train_data
     
     else:
-        test_data_dir = os.path.join(data_path, dataset, 'test/')
+        test_data_dir = os.path.join(data_path, dataset, setting, 'test/')
 
         test_file = test_data_dir + str(idx) + '.npz'
         with open(test_file, 'rb') as f:
@@ -185,7 +186,7 @@ def read_client_data_shakespeare(dataset, idx, niid, balance, alpha, is_train=Tr
 #         return read_client_data_Shakespeare(dataset, idx)
 #
 #     if is_train:
-#         train_data = read_data(dataset, idx, is_train)
+#         train_data = read_data(dataset, idx, is_train)dataset
 #         X_train = torch.Tensor(train_data['x']).type(torch.float32)
 #         y_train = torch.Tensor(train_data['y']).type(torch.int64)
 #
