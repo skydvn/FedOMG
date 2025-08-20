@@ -42,12 +42,12 @@ class FedPAC(Server):
             #     "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
             # )
 
-            # wandb.login(key='528b843354e26ae06f5994740ea776a5798dfaf2')
-            wandb.login(key='e9a87a33cf357254cfce9a8349a7d96cef0b1d39')
+            # wandb.login(key='')
+            wandb.login(key='')
 
             wandb.init(
                 project="FL-DG",
-                entity="scalemind",
+                entity="",
                 config=args,
                 name=args.run_name,
                 force=True
