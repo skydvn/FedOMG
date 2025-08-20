@@ -17,7 +17,7 @@ from wilds import get_dataset
 import wandb
 from wandb_env import WANDB_ENTITY, WANDB_PROJECT
 
-os.environ["WANDB_API_KEY"] = "e9a87a33cf357254cfce9a8349a7d96cef0b1d39"
+os.environ["WANDB_API_KEY"] = ""
 # os.environ["WANDB_CACHE_DIR"] = "/home/id202388548/FedDG_Benchmark"
 """
 The main file function:
@@ -36,10 +36,10 @@ def main(args):
         config = json.load(fh)
     wandb_project = WANDB_PROJECT + '_' + hparam['dataset']
     # setup WanDB
-    # wandb.login(key='e9a87a33cf357254cfce9a8349a7d96cef0b1d39')
+    # wandb.login(key='')
     if not args.no_wandb:
         wandb.init(project="FL-DG",
-                   entity="trongbinh2702",
+                   entity="",
                    config=hparam)
         # wandb.run.log_code()
         config['wandb'] = True

@@ -5,7 +5,7 @@ import os
 
 from wandb_env import *
 
-os.environ["WANDB_API_KEY"] = "e9a87a33cf357254cfce9a8349a7d96cef0b1d39"
+os.environ["WANDB_API_KEY"] = ""
 
 
 parser = argparse.ArgumentParser(description='FedDG Benchmark Sweep')
