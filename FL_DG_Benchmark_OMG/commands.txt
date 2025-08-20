@@ -1,0 +1,7 @@
+python main.py --dataset CelebA --num_clients 100 --server_method FedAvg --lr 0.003 --iid 0.1
+python main.py --dataset CelebA --num_clients 100 --client_method FedProx --lr 0.001 --hparam1 0.1 --iid 0.1
+python main.py --dataset CelebA --num_clients 100 --server_method ScaffoldServer --client_method ScaffoldClient --lr 0.0001 --iid 0.1 
+python main.py --dataset CelebA --num_clients 100 --server_method FedADGServer --client_method FedADGClient --lr 0.0002 --iid 0.1 --hparam1 0.25 --hparam3 0.0007 --hparam4 0.0007
+python main.py --dataset CelebA --num_clients 100 --client_method FedSR --lr 0.0005 --iid 0.1 --hparam1 0.01 --hparam2 0.001 
+
+

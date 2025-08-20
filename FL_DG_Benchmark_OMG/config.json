@@ -1,0 +1,7 @@
+{
+    "log_path": "./log",
+    "data_path": "./BinhPhuoi/",
+    "dataset_path": "./BinhPhuoi/datasets/",
+    "start_epoch": 0,
+    "id": "khfbrl08"
+}

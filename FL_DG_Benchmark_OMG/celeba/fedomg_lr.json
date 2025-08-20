@@ -1,0 +1,22 @@
+{
+    "program": "main.py",
+    "method": "grid",
+    "name": "celeba_fedomg_lr_hyperparameter_search",
+    "metric": {
+        "goal": "maximize",
+        "name": "test.acc_wg"
+        },
+    "parameters": {
+        "dataset": {"values":["CelebA"]},
+        "server_method": {"values": ["FedOMG"]},
+        "batch_size": {"values": [16]},
+        "num_rounds": {"values":[19]},
+        "optimizer": {"values":["torch.optim.Adam"]},
+        "num_clients": {"values": [100]},
+        "weight_decay": {"values":[5e-5]},
+        "hparam3": {"values": [0.1]},
+        "hparam4": {"values":[0.5]},
+        "lr": {"values":[0.00001, 0.00003, 0.00005]},
+        "local_epochs": {"values":[1, 3]}
+     }
+}

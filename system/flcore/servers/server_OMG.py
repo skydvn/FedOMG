@@ -85,7 +85,7 @@ class FedOMG(Server):
         """
         all_domain_grads = []
         flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
-        for i_domain in range(int(self.num_clients*self.jr)):
+        for i_domain in range(int(self.num_clients*self.join_ratio)):
             domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
                                  zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
             domain_grad_vector = torch.cat(domain_grad_diffs)
@@ -115,7 +115,7 @@ class FedOMG(Server):
         all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
         # print(all_domains_grad_tensor)
-        g = self.omg_low(all_domains_grad_tensor, self.num_clients)
+        g = self.omg_low(all_domains_grad_tensor, int(self.num_clients*self.join_ratio))
 
         flatten_meta_weights += g * lr_meta
 

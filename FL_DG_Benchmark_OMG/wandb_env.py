@@ -1,0 +1,2 @@
+WANDB_ENTITY = 'trongbinh2702'
+WANDB_PROJECT = 'FL-DG'
