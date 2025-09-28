@@ -8,6 +8,7 @@ import torch
 from torch.optim.lr_scheduler import StepLR
 from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from utils.model_utils import ParamDict
+import quadprog
 
 class FedOMG(Server):
     def __init__(self, args, times):
@@ -31,6 +32,8 @@ class FedOMG(Server):
 
         self.omg_meta_lr = args.omg_meta_lr
         self.grad_balance = args.grad_balance
+
+        self.gm_flag = "gem" # "ca_grad" # "gem"
 
 
     def train(self):
@@ -115,7 +118,11 @@ class FedOMG(Server):
         all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
         # print(all_domains_grad_tensor)
-        g = self.omg_low(all_domains_grad_tensor, int(self.num_clients*self.join_ratio))
+        if self.gm_flag == "ca_grad":
+            g = self.omg_low(all_domains_grad_tensor, int(self.num_clients*self.join_ratio))
+        else:
+            g = project2cone2(all_domains_grad_tensor,
+                              int(self.num_clients*self.join_ratio), margin=0.5, eps=1e-3).to(self.device)
 
         flatten_meta_weights += g * lr_meta
 
@@ -153,6 +160,7 @@ class FedOMG(Server):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
+            print(f"step at {i} is {obj}")
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
@@ -185,5 +193,57 @@ class FedOMG(Server):
             newgrad = newgrad[num_elements:]
 
 
+# def project2cone2(gradient, domain_num, margin=0.5, eps=1e-3):
+#     """
+#         Solves the GEM dual QP described in the paper given a proposed
+#         gradient "gradient", and a memory of task gradients "memories".
+#         Overwrites "gradient" with the final projected update.
+#
+#         input:  gradient, p-vector
+#         input:  memories, (t * p)-vector
+#         output: x, p-vector
+#     """
+#     print(f"gradient tensor: {gradient.size()}")
+#     memories_np = gradient[:,0:domain_num-1].cpu().t().detach().double().numpy()
+#     gradient_np = gradient[:,domain_num-1:domain_num].cpu().contiguous().view(-1).detach().double().numpy()
+#     print(f"memories: {np.shape(memories_np)} | gradient: {np.shape(gradient_np)}")
+#     t = memories_np.shape[0]
+#     P = np.dot(memories_np, memories_np.transpose())
+#     P = 0.5 * (P + P.transpose()) + np.eye(t) * eps
+#     q = np.dot(memories_np, gradient_np) * -1
+#     G = np.eye(t)
+#     h = np.zeros(t) + margin
+#     print(f"P: {np.shape(P)} | q: {np.shape(q)} | G: {np.shape(G)} | h: {np.shape(h)}")
+#     v = quadprog.solve_qp(P, q, G, h)[0]
+#     x = np.dot(v, memories_np) + gradient_np
+#
+#     output = torch.Tensor(x).view(-1)
+#     return output
 
 
+def project2cone2(gradient, domain_num, margin=0.5, eps=1e-3):
+    """
+        Solves the GEM dual QP described in the paper given a proposed
+        gradient "gradient", and a memory of task gradients "memories".
+        Overwrites "gradient" with the final projected update.
+
+        input:  gradient, p-vector
+        input:  memories, (t * p)-vector
+        output: x, p-vector
+    """
+    print(f"gradient tensor: {gradient.size()}")
+    memories_np = gradient[:,:].cpu().t().detach().double().numpy()
+    gradient_np = gradient.mean(1).cpu().contiguous().view(-1).detach().double().numpy()
+    print(f"memories: {np.shape(memories_np)} | gradient: {np.shape(gradient_np)}")
+    t = memories_np.shape[0]
+    P = np.dot(memories_np, memories_np.transpose())
+    P = 0.5 * (P + P.transpose()) + np.eye(t) * eps
+    q = np.dot(memories_np, gradient_np) * -1
+    G = np.eye(t)
+    h = np.zeros(t) + margin
+    print(f"P: {np.shape(P)} | q: {np.shape(q)} | G: {np.shape(G)} | h: {np.shape(h)}")
+    v = quadprog.solve_qp(P, q, G, h)[0]
+    x = np.dot(v, memories_np) + gradient_np
+
+    output = torch.Tensor(x).view(-1)
+    return output
